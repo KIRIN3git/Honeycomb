@@ -55,19 +55,22 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int BASE_G = 189;
 	final static int BASE_B = 194;
 
-	// 六角形の半径の長さ
-	final static float HEX_LENGTH = 50.0f;
 	final static int SQUARE_LENGTH = 100;
+
+	// 六角形の半径の長さ
+//	final static float HEX_LENGTH = 50.0f;
+	final static float HEX_LENGTH = 25.0f;
 
 	// 六角形の一辺の長さの比率
 	final static float HEX_RATIO = 0.86f;
 
 	// 移動マーカーの半径
-	final static int DIRECTION_RADIUS = 80;
-	//	final static int DIRECTION_RADIUS = 40;
+	//	final static int DIRECTION_RADIUS = 80;
+	final static int DIRECTION_RADIUS = 40;
 	// プレイヤーの半径
-	final static int PLAYER_RADIUS = 40;
-	//	final static int PLAYER_RADIUS = 20;
+	//	final static int PLAYER_RADIUS = 40;
+
+	final static int PLAYER_RADIUS = 20;
 	// プレイヤーのスピード
 	final static int PLAYER_SPEED = 10;
 //	final static int PLAYER_SPEED = 10;
@@ -156,14 +159,47 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 						if( (i - ( HEX_NUM / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM / 2 ));
 						else  add_y = HEX_LENGTH * HEX_RATIO + ( (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM / 2 )));
 
-						path.moveTo(center_x + HEX_LENGTH + add_x, center_y + add_y);
-						path.lineTo(center_x + (HEX_LENGTH / 2) + add_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y);
-						path.lineTo(center_x - (HEX_LENGTH / 2) + add_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y);
-						path.lineTo(center_x - HEX_LENGTH + add_x, center_y + add_y);
-						path.lineTo(center_x - (HEX_LENGTH / 2) + add_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y);
-						path.lineTo(center_x + (HEX_LENGTH / 2) + add_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y);
+						path.moveTo(center_x + HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
+						path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
+						path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
+						path.lineTo(center_x - HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
+						path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
+						path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
 						path.close();
 						canvas.drawPath(path, paint);
+
+
+						// すでにペイント済み、枠内に中心点が入ったら
+						if( square_color[i][j] == 1
+								|| ( ( center_x - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + move_x < center_x
+								&& center_x < ( center_x + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + move_x
+								&& ( center_y - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + move_y < center_y
+								&& center_y < ( center_y + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + move_y ) ){
+
+							// 色を塗る
+							paint.setColor(Color.argb(255, 255, 0, 0));
+							paint.setStrokeWidth(8);
+							paint.setStyle(Paint.Style.FILL);
+							canvas.drawRect(
+									( center_x - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + move_x,
+									( center_y - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + move_y,
+									( center_x + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + move_x,
+									( center_y + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + move_y,
+									paint);
+
+							// 新規塗りだったら
+							if( square_color[i][j] != 1 ){
+								// 色を記録
+								square_color[i][j] = 1;
+
+								// 囲まれていたら色を塗る
+								CheckCloseAndFill(i,j,canvas);
+
+								before_fill_i = i;
+								before_fill_j = j;
+
+							}
+						}
 					}
 				}
 
