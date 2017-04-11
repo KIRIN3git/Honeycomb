@@ -28,7 +28,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int SQUARE_NUM = 21;
 
 	// 六角形の縦、横の数
-	final static int HEX_NUM = 11;
+	final static int HEX_NUM = 10;
 
 
 	// 色の塗りつぶし確認
@@ -60,6 +60,10 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	// 六角形の半径の長さ
 	final static float HEX_LENGTH = 100.0f;
 //	final static float HEX_LENGTH = 25.0f;
+
+	// 六角形の線の太さ
+	final static float HEX_WIDHT = 10.0f;
+	//	final static float HEX_LENGTH = 25.0f;
 
 	// 六角形の一辺の長さの比率
 	final static float HEX_RATIO = 0.86f;
@@ -143,16 +147,9 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					//Log.w( "DEBUG_DATA", "move_y " + move_y );
 				}
 
-
-
-
 				// 基本六角形
 				for( i = 0; i < HEX_NUM; i++ ){
 					for( j = 0; j < HEX_NUM; j++ ){
-						paint.setColor(Color.argb(255, BASE_R, BASE_G, BASE_B));
-						paint.setStrokeWidth(8);
-						paint.setStyle(Paint.Style.STROKE);
-						path.reset();
 
 						// センター座標増加分
 						// i - ( HEX_NUM / 2 ),j - ( HEX_NUM / 2 ) は左右対称にするため
@@ -160,25 +157,16 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 						if( (i - ( HEX_NUM / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM / 2 ));
 						else  add_y = HEX_LENGTH * HEX_RATIO + ( (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM / 2 )));
 
-						path.moveTo(center_x + HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
-						path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-						path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-						path.lineTo(center_x - HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
-						path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-						path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-						path.close();
-						canvas.drawPath(path, paint);
 						// すでにペイント済み、枠内に中心点が入ったら
 						// 一旦、円で計算
-
 						if( hex_color[i][j] == 1
 								|| ((add_x + move_x) * (add_x + move_x) + (add_y + move_y) * (add_y + move_y)) < Math.pow(HEX_LENGTH,2) ){
 
-
 							// 色を塗る
 							paint.setColor(Color.argb(255, 255, 0, 0));
-							paint.setStrokeWidth(8);
+							paint.setStrokeWidth(HEX_WIDHT);
 							paint.setStyle(Paint.Style.FILL);
+							path.reset();
 							path.moveTo(center_x + HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
 							path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
 							path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
@@ -187,6 +175,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 							path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
 							path.close();
 							canvas.drawPath(path, paint);
+
 
 							// 新規塗りだったら
 							if( hex_color[i][j] != 1 ){
@@ -201,61 +190,23 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 							}
 						}
+
+						paint.setColor(Color.argb(255, BASE_R, BASE_G, BASE_B));
+						paint.setStrokeWidth(HEX_WIDHT);
+						paint.setStyle(Paint.Style.STROKE);
+						path.reset();
+
+						path.moveTo(center_x + HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
+						path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
+						path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
+						path.lineTo(center_x - HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
+						path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
+						path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
+						path.close();
+						canvas.drawPath(path, paint);
+
 					}
 				}
-
-
-//				// 基本グリッド
-//				for( i = 0; i < SQUARE_NUM; i++ ){
-//					for( j = 0; j < SQUARE_NUM; j++ ){
-//
-//						paint.setColor(Color.argb(255, BASE_R, BASE_G, BASE_B));
-//						paint.setStrokeWidth(8);
-//						paint.setStyle(Paint.Style.STROKE);
-//
-//						// 縦横に10個ずつ
-//						// (x1,y1,x2,y2,paint) 左上の座標(x1,y1), 右下の座標(x2,y2)
-//						canvas.drawRect(
-//								( center_x - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + move_x,
-//								( center_y - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + move_y,
-//								( center_x + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + move_x,
-//								( center_y + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + move_y,
-//								paint);
-//
-//
-//						// すでにペイント済み、枠内に中心点が入ったら
-//						if( hex_color[i][j] == 1
-//								|| ( ( center_x - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + move_x < center_x
-//								&& center_x < ( center_x + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + move_x
-//								&& ( center_y - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + move_y < center_y
-//								&& center_y < ( center_y + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + move_y ) ){
-//
-//							// 色を塗る
-//							paint.setColor(Color.argb(255, 255, 0, 0));
-//							paint.setStrokeWidth(8);
-//							paint.setStyle(Paint.Style.FILL);
-//							canvas.drawRect(
-//									( center_x - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + move_x,
-//									( center_y - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + move_y,
-//									( center_x + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + move_x,
-//									( center_y + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + move_y,
-//									paint);
-//
-//							// 新規塗りだったら
-//							if( hex_color[i][j] != 1 ){
-//								// 色を記録
-//								hex_color[i][j] = 1;
-//
-//								// 囲まれていたら色を塗る
-//								CheckCloseAndFill(i,j,canvas);
-//
-//								before_fill_i = i;
-//								before_fill_j = j;
-//
-//							}
-//						}
-//					}
-//				}
 
 				// 中心円の表示
 				paint.setColor(Color.argb(255, 0, 0, 255));
