@@ -28,8 +28,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int SQUARE_NUM = 21;
 
 	// 六角形の縦、横の数
-	final static int HEX_NUM = 10;
-
+	final static int HEX_NUM = 21;
 
 	// 色の塗りつぶし確認
 	int hex_color[][];
@@ -58,8 +57,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int SQUARE_LENGTH = 100;
 
 	// 六角形の半径の長さ
-	final static float HEX_LENGTH = 100.0f;
-//	final static float HEX_LENGTH = 25.0f;
+//	final static float HEX_LENGTH = 100.0f;
+	final static float HEX_LENGTH = 50.0f;
 
 	// 六角形の線の太さ
 	final static float HEX_WIDHT = 10.0f;
@@ -69,14 +68,15 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static float HEX_RATIO = 0.86f;
 
 	// 移動マーカーの半径
-	final static int DIRECTION_RADIUS = 80;
-//	final static int DIRECTION_RADIUS = 40;
+//	final static int DIRECTION_RADIUS = 80;
+	final static int DIRECTION_RADIUS = 40;
+
 	// プレイヤーの半径
-	final static int PLAYER_RADIUS = 40;
-//	final static int PLAYER_RADIUS = 20;
+//	final static int PLAYER_RADIUS = 40;
+	final static int PLAYER_RADIUS = 20;
 
 	// プレイヤーのスピード
-	final static int PLAYER_SPEED = 10;
+	final static int PLAYER_SPEED = 3;
 //	final static int PLAYER_SPEED = 10;
 
 	// プレイヤーの色
@@ -91,6 +91,14 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 	// 現在タッチ中かのフラグ
 	boolean touch_flg = false;
+
+
+    // FPS
+    long t1 = 0,t2 = 0;
+    final static long FPS = 60;
+    final static long FPS_MSEC = 1000/FPS;
+
+
 
 	SurfaceHolder surfaceHolder;
 	Thread thread;
@@ -123,16 +131,25 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		Paint bgPaint = new Paint();
 		bgPaint.setColor(Color.WHITE);
 
-		// パスを設定
+        // 起動時間
+        long StartTimeMillis = System.currentTimeMillis();
+        // 現在時間
+        long CurrentTimeMillis;
+        // 前回時間
+        long BeforeTimeMillis = StartTimeMillis;
+
+
+        // パスを設定
 		Path path = new Path();
 
 		while(thread != null){
 			try{
+                t1 = System.currentTimeMillis();
 
 				canvas = surfaceHolder.lockCanvas();
 				canvas.drawRect( 0, 0, screen_width, screen_height, bgPaint);
 
-				// Canvas 中心点
+  				// Canvas 中心点
 				center_x = canvas.getWidth()/2;
 				center_y = canvas.getHeight()/2;
 
@@ -147,56 +164,57 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					//Log.w( "DEBUG_DATA", "move_y " + move_y );
 				}
 
-				// 基本六角形
+                // 基本六角形
 				for( i = 0; i < HEX_NUM; i++ ){
 					for( j = 0; j < HEX_NUM; j++ ){
 
-						// センター座標増加分
+                        // センター座標増加分
 						// i - ( HEX_NUM / 2 ),j - ( HEX_NUM / 2 ) は左右対称にするため
 						add_x = HEX_LENGTH * (3.0f/2.0f) * (float)(i - ( HEX_NUM / 2 ));
 						if( (i - ( HEX_NUM / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM / 2 ));
 						else  add_y = HEX_LENGTH * HEX_RATIO + ( (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM / 2 )));
 
-						// すでにペイント済み、枠内に中心点が入ったら
-						// 一旦、円で計算
-						if( hex_color[i][j] == 1
-								|| ((add_x + move_x) * (add_x + move_x) + (add_y + move_y) * (add_y + move_y)) < Math.pow(HEX_LENGTH,2) ){
 
-							// 色を塗る
-							paint.setColor(Color.argb(255, 255, 0, 0));
-							paint.setStrokeWidth(HEX_WIDHT);
-							paint.setStyle(Paint.Style.FILL);
-							path.reset();
-							path.moveTo(center_x + HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
-							path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-							path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-							path.lineTo(center_x - HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
-							path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-							path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-							path.close();
-							canvas.drawPath(path, paint);
-
-
-							// 新規塗りだったら
-							if( hex_color[i][j] != 1 ){
-								// 色を記録
-								hex_color[i][j] = 1;
-
-								// 囲まれていたら色を塗る
-//								CheckCloseAndFill(i,j,canvas);
-
-								before_fill_i = i;
-								before_fill_j = j;
-
-							}
-						}
+//						// すでにペイント済み、枠内に中心点が入ったら
+//						// 一旦、円で計算
+//						if( hex_color[i][j] == 1
+//								|| ((add_x + move_x) * (add_x + move_x) + (add_y + move_y) * (add_y + move_y)) < Math.pow(HEX_LENGTH,2) ){
+//
+//							// 色を塗る
+//							paint.setColor(Color.argb(255, 255, 0, 0));
+//							paint.setStrokeWidth(HEX_WIDHT);
+//							paint.setStyle(Paint.Style.FILL);
+//							path.reset();
+//							path.moveTo(center_x + HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
+//							path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
+//							path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
+//							path.lineTo(center_x - HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
+//							path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
+//							path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
+//							path.close();
+//							canvas.drawPath(path, paint);
+//
+//
+//							// 新規塗りだったら
+//							if( hex_color[i][j] != 1 ){
+//								// 色を記録
+//								hex_color[i][j] = 1;
+//
+//								// 囲まれていたら色を塗る
+////								CheckCloseAndFill(i,j,canvas);
+//
+//								before_fill_i = i;
+//								before_fill_j = j;
+//
+//							}
+//						}
 
 						paint.setColor(Color.argb(255, BASE_R, BASE_G, BASE_B));
 						paint.setStrokeWidth(HEX_WIDHT);
 						paint.setStyle(Paint.Style.STROKE);
 						path.reset();
 
-						path.moveTo(center_x + HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
+                        path.moveTo(center_x + HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
 						path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
 						path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
 						path.lineTo(center_x - HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
@@ -205,17 +223,17 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 						path.close();
 						canvas.drawPath(path, paint);
 
-					}
+                    }
 				}
 
-				// 中心円の表示
+                // 中心円の表示
 				paint.setColor(Color.argb(255, 0, 0, 255));
 				paint.setAntiAlias(true);
 				paint.setStyle(Paint.Style.FILL_AND_STROKE);
 				// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
 				canvas.drawCircle(center_x, center_y, PLAYER_RADIUS, paint);
 
-				if( touch_flg ){
+                if( touch_flg ){
 					// セーブタップ位置に〇を表示
 					paint.setColor(Color.argb(120, 188, 200, 219)); // 水浅葱
 					paint.setStrokeWidth(20);
@@ -244,8 +262,18 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					//Log.w( "DEBUG_DATA", "CENTER direXY[1] " + indicatorXY[1] );
 				}
 
-				// 描画
+                // 描画
 				surfaceHolder.unlockCanvasAndPost(canvas);
+
+                // FPS
+                t2 = System.currentTimeMillis();
+                Log.w( "FPS", String.valueOf( 1000 / (t2 - t1) ) );
+                if(t2 - t1 < FPS_MSEC){ // 1000 / 60 = 16.6666
+                    try {
+                        Thread.sleep(FPS_MSEC - (t2 - t1));
+                    } catch (InterruptedException e) {
+                    }
+                }
 
 			} catch(Exception e){}
 		}
