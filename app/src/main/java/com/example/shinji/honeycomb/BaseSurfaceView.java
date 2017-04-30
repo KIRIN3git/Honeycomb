@@ -21,19 +21,16 @@ import static java.lang.Math.sqrt;
 
 public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHolder.Callback{
 
-	int r = 0,g = 0,b = 255;
-	int fill_x = -999,fill_y = -999;
-
 	// 四角の縦、横の数
-	final static int SQUARE_NUM = 21;
+	final static int SQUARE_NUM = 11;
 
 	// 六角形の縦、横の数
-	final static int HEX_NUM = 21;
+	final static int HEX_NUM = 11;
 
 	// 色の塗りつぶし確認
 	int hex_color[][];
 
-	// スクリーンの大きさ
+	// スクリーンの大きさ(px)
 	int screen_width, screen_height;
 
 	// 現在タッチしている位置
@@ -49,31 +46,32 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	// 全体の移動位置
 	int move_x = 0,move_y = 0;
 
-	// Base図形RGB
-	final static int BASE_R = 188;
-	final static int BASE_G = 189;
-	final static int BASE_B = 194;
+	// 背景RGB
+	final static int BACK_R = 188;
+	final static int BACK_G = 189;
+	final static int BACK_B = 194;
+
+	// 六角形初期値RGB
+	final static int BASE_R = 255;
+	final static int BASE_G = 255;
+	final static int BASE_B = 255;
 
 	final static int SQUARE_LENGTH = 100;
 
 	// 六角形の半径の長さ
-//	final static float HEX_LENGTH = 100.0f;
-	final static float HEX_LENGTH = 50.0f;
+	static float HEX_LENGTH = 50.0f;
 
 	// 六角形の線の太さ
-	final static float HEX_WIDHT = 10.0f;
-	//	final static float HEX_LENGTH = 25.0f;
+	static float HEX_WIDHT;
 
 	// 六角形の一辺の長さの比率
-	final static float HEX_RATIO = 0.86f;
+	static float HEX_RATIO;
 
 	// 移動マーカーの半径
-//	final static int DIRECTION_RADIUS = 80;
-	final static int DIRECTION_RADIUS = 40;
+	static int DIRECTION_RADIUS;
 
 	// プレイヤーの半径
-//	final static int PLAYER_RADIUS = 40;
-	final static int PLAYER_RADIUS = 20;
+	static int PLAYER_RADIUS;
 
 	// プレイヤーのスピード
 	final static int PLAYER_SPEED = 3;
@@ -94,10 +92,9 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 
     // FPS
-    long t1 = 0,t2 = 0;
-    final static long FPS = 60;
+    long run_start_time = 0, run_end_time = 0;
+    final static long FPS = 120;
     final static long FPS_MSEC = 1000/FPS;
-
 
 
 	SurfaceHolder surfaceHolder;
@@ -105,10 +102,52 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 	public BaseSurfaceView(Context context){
 		super(context);
+
+		// 端末に合わせた各サイズの調整
+		if( MainActivity.real.x >= 1080 ) {
+			// 六角形の半径の長さ
+			HEX_LENGTH = 50.0f;
+			// 六角形の線の太さ
+			HEX_WIDHT = 10.0f;
+			// 六角形の一辺の長さの比率
+			HEX_RATIO = 0.86f;
+			// 移動マーカーの半径
+			DIRECTION_RADIUS = 40;
+			// プレイヤーの半径
+			PLAYER_RADIUS = 20;
+		}
+		else if( MainActivity.real.x >= 720 ){
+			// 六角形の半径の長さ
+			HEX_LENGTH = 50.0f;
+			// 六角形の線の太さ/2
+			HEX_WIDHT = 10.0f;
+			// 六角形の一辺の長さの比率
+			HEX_RATIO = 0.86f;
+			// 移動マーカーの半径
+			DIRECTION_RADIUS = 40;
+			// プレイヤーの半径
+			PLAYER_RADIUS = 20;
+		}
+		else{
+			// 六角形の半径の長さ
+			HEX_LENGTH = 50.0f;
+			// 六角形の線の太さ
+			HEX_WIDHT = 10.0f;
+			// 六角形の一辺の長さの比率
+			HEX_RATIO = 0.86f;
+			// 移動マーカーの半径
+			DIRECTION_RADIUS = 40;
+			// プレイヤーの半径
+			PLAYER_RADIUS = 20;
+		}
+
+
 		surfaceHolder = getHolder();
 		surfaceHolder.addCallback(this);
 
 		hex_color = new int[SQUARE_NUM][SQUARE_NUM];
+
+
 	}
 
 	@Override public void run() {
@@ -129,7 +168,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		// ペイントを設定
 		Paint paint = new Paint();
 		Paint bgPaint = new Paint();
-		bgPaint.setColor(Color.WHITE);
+		bgPaint.setColor(Color.argb(255, BACK_R, BACK_G, BACK_B));
 
         // 起動時間
         long StartTimeMillis = System.currentTimeMillis();
@@ -138,18 +177,17 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
         // 前回時間
         long BeforeTimeMillis = StartTimeMillis;
 
-
         // パスを設定
 		Path path = new Path();
 
 		while(thread != null){
 			try{
-                t1 = System.currentTimeMillis();
+                run_start_time = System.currentTimeMillis();
 
 				canvas = surfaceHolder.lockCanvas();
 				canvas.drawRect( 0, 0, screen_width, screen_height, bgPaint);
 
-  				// Canvas 中心点
+				// Canvas 中心点
 				center_x = canvas.getWidth()/2;
 				center_y = canvas.getHeight()/2;
 
@@ -211,15 +249,23 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 						paint.setColor(Color.argb(255, BASE_R, BASE_G, BASE_B));
 						paint.setStrokeWidth(HEX_WIDHT);
-						paint.setStyle(Paint.Style.STROKE);
+						paint.setStyle(Paint.Style.FILL_AND_STROKE);
 						path.reset();
+						
 
-                        path.moveTo(center_x + HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
-						path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-						path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-						path.lineTo(center_x - HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
-						path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-						path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
+						
+						// 右
+                        path.moveTo(center_x + HEX_LENGTH - HEX_WIDHT + add_x + move_x, center_y + add_y + move_y);
+						// 右下
+						path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y + move_y);
+						// 左下
+						path.lineTo(center_x - (HEX_LENGTH / 2) + (HEX_WIDHT / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y + move_y);
+						// 左
+						path.lineTo(center_x - HEX_LENGTH + HEX_WIDHT + add_x + move_x, center_y + add_y + move_y);
+						// 左上
+						path.lineTo(center_x - (HEX_LENGTH / 2) + (HEX_WIDHT / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y + move_y);
+						// 右上
+						path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y + move_y);
 						path.close();
 						canvas.drawPath(path, paint);
 
@@ -266,11 +312,11 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				surfaceHolder.unlockCanvasAndPost(canvas);
 
                 // FPS
-                t2 = System.currentTimeMillis();
-                Log.w( "FPS", String.valueOf( 1000 / (t2 - t1) ) );
-                if(t2 - t1 < FPS_MSEC){ // 1000 / 60 = 16.6666
+                run_end_time = System.currentTimeMillis();
+                Log.w( "FPS", String.valueOf( 1000 / (run_end_time - run_start_time) ) );
+                if(run_end_time - run_start_time < FPS_MSEC){ // 1000 / 60 = 16.6666
                     try {
-                        Thread.sleep(FPS_MSEC - (t2 - t1));
+                        Thread.sleep(FPS_MSEC - (run_end_time - run_start_time));
                     } catch (InterruptedException e) {
                     }
                 }
@@ -488,11 +534,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		switch(e.getAction()){
 			// 触る
 			case MotionEvent.ACTION_DOWN:
-				r = 255;
-				g = 0;
-				b = 0;
-				fill_x = 3;
-				fill_y = 5;
 
 				save_touch_x = now_touch_x;
 				save_touch_y = now_touch_y;
@@ -594,5 +635,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		//Log.w( "DEBUG_DATA", "結果 " + ( pow(indicatorXY[0],2) + pow(indicatorXY[1],2) )  );
 
 	}
+
+
+
 }
 
