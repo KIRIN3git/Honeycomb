@@ -25,10 +25,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int SQUARE_NUM = 11;
 
 	// 六角形の縦、横の数
-	final static int HEX_NUM = 11;
-
-	// 色の塗りつぶし確認
-	int hex_color[][];
+	final static int HEX_NUM = 21;
 
 	// スクリーンの大きさ(px)
 	int screen_width, screen_height;
@@ -51,12 +48,40 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int BACK_G = 189;
 	final static int BACK_B = 194;
 
-	// 六角形初期値RGB
-	final static int BASE_R = 255;
-	final static int BASE_G = 255;
-	final static int BASE_B = 255;
+	final static int PLAYER_NO = 1;
 
-	final static int SQUARE_LENGTH = 100;
+	// 六角形の塗りつぶし確認
+	int hex_color_num[][] = {
+			{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3}
+	};
+
+	int hex_color_rgb[][] = {
+			{255,255,255},
+			{0,0,255},
+			{255,0,0},
+			{0,0,0}
+	};
+
 
 	// 六角形の半径の長さ
 	static float HEX_LENGTH = 50.0f;
@@ -75,7 +100,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 	// プレイヤーのスピード
 	final static int PLAYER_SPEED = 3;
-//	final static int PLAYER_SPEED = 10;
+//	final static int PLAYER_SPEED = 5;
 
 	// プレイヤーの色
 	final static int PLAYER_R = 44;
@@ -90,6 +115,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	// 現在タッチ中かのフラグ
 	boolean touch_flg = false;
 
+
+	final static int SQUARE_LENGTH = 100;
 
     // FPS
     long run_start_time = 0, run_end_time = 0;
@@ -106,15 +133,15 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		// 端末に合わせた各サイズの調整
 		if( MainActivity.real.x >= 1080 ) {
 			// 六角形の半径の長さ
-			HEX_LENGTH = 50.0f;
+			HEX_LENGTH = 100.0f;
 			// 六角形の線の太さ
-			HEX_WIDHT = 10.0f;
+			HEX_WIDHT = 20.0f;
 			// 六角形の一辺の長さの比率
 			HEX_RATIO = 0.86f;
 			// 移動マーカーの半径
-			DIRECTION_RADIUS = 40;
+			DIRECTION_RADIUS = 80;
 			// プレイヤーの半径
-			PLAYER_RADIUS = 20;
+			PLAYER_RADIUS = 40;
 		}
 		else if( MainActivity.real.x >= 720 ){
 			// 六角形の半径の長さ
@@ -145,7 +172,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		surfaceHolder = getHolder();
 		surfaceHolder.addCallback(this);
 
-		hex_color = new int[SQUARE_NUM][SQUARE_NUM];
+//		hex_color_num = new int[SQUARE_NUM][SQUARE_NUM];
 
 
 	}
@@ -177,6 +204,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
         // 前回時間
         long BeforeTimeMillis = StartTimeMillis;
 
+		boolean a = true;
         // パスを設定
 		Path path = new Path();
 
@@ -212,48 +240,36 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 						if( (i - ( HEX_NUM / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM / 2 ));
 						else  add_y = HEX_LENGTH * HEX_RATIO + ( (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM / 2 )));
 
+						// すでにペイント済み、枠内に中心点が入ったら
+						// 一旦、円で計算
+						if( ((add_x + move_x) * (add_x + move_x) + (add_y + move_y) * (add_y + move_y)) < Math.pow(HEX_LENGTH,2) ){
+							// 壁にぶつかったら
+							if( hex_color_num[i][j] == 3 ){
+								move_x = 0;
+								move_y = 0;
+								if( a ){
+									a = false;
+								}
+							}
+							// 新規塗りだったら
+							else if( hex_color_num[i][j] != PLAYER_NO ){
+								// 色を記録
+								hex_color_num[i][j] = PLAYER_NO;
 
-//						// すでにペイント済み、枠内に中心点が入ったら
-//						// 一旦、円で計算
-//						if( hex_color[i][j] == 1
-//								|| ((add_x + move_x) * (add_x + move_x) + (add_y + move_y) * (add_y + move_y)) < Math.pow(HEX_LENGTH,2) ){
-//
-//							// 色を塗る
-//							paint.setColor(Color.argb(255, 255, 0, 0));
-//							paint.setStrokeWidth(HEX_WIDHT);
-//							paint.setStyle(Paint.Style.FILL);
-//							path.reset();
-//							path.moveTo(center_x + HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
-//							path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-//							path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-//							path.lineTo(center_x - HEX_LENGTH + add_x + move_x, center_y + add_y + move_y);
-//							path.lineTo(center_x - (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-//							path.lineTo(center_x + (HEX_LENGTH / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + add_y + move_y);
-//							path.close();
-//							canvas.drawPath(path, paint);
-//
-//
-//							// 新規塗りだったら
-//							if( hex_color[i][j] != 1 ){
-//								// 色を記録
-//								hex_color[i][j] = 1;
-//
-//								// 囲まれていたら色を塗る
-////								CheckCloseAndFill(i,j,canvas);
-//
-//								before_fill_i = i;
-//								before_fill_j = j;
-//
-//							}
-//						}
+								// 囲まれていたら色を塗る
+//								CheckCloseAndFill(i,j,canvas);
 
-						paint.setColor(Color.argb(255, BASE_R, BASE_G, BASE_B));
+								before_fill_i = i;
+								before_fill_j = j;
+							}
+						}
+
+
+						// 六角形の描画
+						paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[i][j]][0], hex_color_rgb[hex_color_num[i][j]][1], hex_color_rgb[hex_color_num[i][j]][2]));
 						paint.setStrokeWidth(HEX_WIDHT);
 						paint.setStyle(Paint.Style.FILL_AND_STROKE);
 						path.reset();
-						
-
-						
 						// 右
                         path.moveTo(center_x + HEX_LENGTH - HEX_WIDHT + add_x + move_x, center_y + add_y + move_y);
 						// 右下
@@ -313,7 +329,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
                 // FPS
                 run_end_time = System.currentTimeMillis();
-                Log.w( "FPS", String.valueOf( 1000 / (run_end_time - run_start_time) ) );
+//                Log.w( "FPS", String.valueOf( 1000 / (run_end_time - run_start_time) ) );
                 if(run_end_time - run_start_time < FPS_MSEC){ // 1000 / 60 = 16.6666
                     try {
                         Thread.sleep(FPS_MSEC - (run_end_time - run_start_time));
@@ -340,40 +356,40 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 		// PLAYARが上端じゃなくて、上のマスがBEFOREじゃなく埋まっていたら、閉じた可能性あり
 		if( i != 0 ){
-			Log.w( "CheckCloseAndFill", "hex_color[i-1][j] " + hex_color[i-1][j] );
-			if( hex_color[i-1][j] == 1 && !( i-1 == before_fill_i && j == before_fill_j ) ){
+			Log.w( "CheckCloseAndFill", "hex_color_num[i-1][j] " + hex_color_num[i-1][j] );
+			if( hex_color_num[i-1][j] == 1 && !( i-1 == before_fill_i && j == before_fill_j ) ){
 				tabun_close_flg = true;
 
 				Log.w( "CheckCloseAndFill", "TRUEEEEEEEEEE1"  );
 			}
-			Log.w( "CheckCloseAndFill", "hex_color[i-1][j] " + hex_color[i-1][j] );
+			Log.w( "CheckCloseAndFill", "hex_color_num[i-1][j] " + hex_color_num[i-1][j] );
 		}
 		if( j != 0 ){
-			Log.w( "CheckCloseAndFill", "hex_color[i][j-1] " + hex_color[i][j-1] );
-			if( hex_color[i][j-1] == 1 && !( i == before_fill_i && j-1 == before_fill_j ) ){
+			Log.w( "CheckCloseAndFill", "hex_color_num[i][j-1] " + hex_color_num[i][j-1] );
+			if( hex_color_num[i][j-1] == 1 && !( i == before_fill_i && j-1 == before_fill_j ) ){
 				tabun_close_flg = true;
 
 				Log.w( "CheckCloseAndFill", "TRUEEEEEEEEEE2"  );
 			}
-			Log.w( "CheckCloseAndFill", "hex_color[i][j-1] " + hex_color[i][j-1] );
+			Log.w( "CheckCloseAndFill", "hex_color_num[i][j-1] " + hex_color_num[i][j-1] );
 		}
 		if( i != SQUARE_NUM - 1 ){
-			Log.w( "CheckCloseAndFill", "hex_color[i+1][j] " + hex_color[i+1][j] );
-			if( hex_color[i+1][j] == 1 && !( i+1 == before_fill_i && j == before_fill_j ) ){
+			Log.w( "CheckCloseAndFill", "hex_color_num[i+1][j] " + hex_color_num[i+1][j] );
+			if( hex_color_num[i+1][j] == 1 && !( i+1 == before_fill_i && j == before_fill_j ) ){
 				tabun_close_flg = true;
 
 				Log.w( "CheckCloseAndFill", "TRUEEEEEEEEEE3"  );
 			}
-			Log.w( "CheckCloseAndFill", "hex_color[i+1][j] " + hex_color[i+1][j] );
+			Log.w( "CheckCloseAndFill", "hex_color_num[i+1][j] " + hex_color_num[i+1][j] );
 		}
 		if( j != SQUARE_NUM - 1 ){
-			Log.w( "CheckCloseAndFill", "hex_color[i][j+1] " + hex_color[i][j+1] );
-			if( hex_color[i][j+1] == 1 && !( i == before_fill_i && j+1 == before_fill_j ) ){
+			Log.w( "CheckCloseAndFill", "hex_color_num[i][j+1] " + hex_color_num[i][j+1] );
+			if( hex_color_num[i][j+1] == 1 && !( i == before_fill_i && j+1 == before_fill_j ) ){
 				tabun_close_flg = true;
 
 				Log.w( "CheckCloseAndFill", "TRUEEEEEEEEEE4"  );
 			}
-			Log.w( "CheckCloseAndFill", "hex_color[i][j+1] " + hex_color[i][j+1] );
+			Log.w( "CheckCloseAndFill", "hex_color_num[i][j+1] " + hex_color_num[i][j+1] );
 		}
 
 		Log.w( "CheckCloseAndFill", "ssssssssssssssssssss1 " );
@@ -383,8 +399,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		Log.w( "CheckCloseAndFill", "ssssssssssssssssssss2 " );
 
 		// 左が開いていたら、閉じているか確認
-		if( i != 0 && hex_color[i-1][j] == 0 ) {
-			hex_color[i-1][j] = 2;
+		if( i != 0 && hex_color_num[i-1][j] == 0 ) {
+			hex_color_num[i-1][j] = 2;
 			Log.w( "CheckCloseAndFill", "I AM 2 i" + i  );
 			Log.w( "CheckCloseAndFill", "I AM 2 j" + j  );
 			// 完全に閉じているかチェック、閉じてる範囲を3に書き換え
@@ -421,7 +437,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				for (j = 0; j < SQUARE_NUM; j++) {
 					Log.w( "CheckCloseComp", "i " + i);
 					Log.w( "CheckCloseComp", "j " + j);
-					if( hex_color[i][j] == 2 ){
+					if( hex_color_num[i][j] == 2 ){
 						//１個でも2があれば、再検索するよ
 						comp_flg = true;
 						data_flg = true;
@@ -431,24 +447,24 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 						// 検索対象の左が0番だったら検索対象に追加
 						if( i != 0 ){
 							Log.w( "CheckCloseComp", "1");
-							if( hex_color[i-1][j] == 0 ) hex_color[i-1][j] = 2;
+							if( hex_color_num[i-1][j] == 0 ) hex_color_num[i-1][j] = 2;
 						}
 						if( j != 0 ){
 							Log.w( "CheckCloseComp", "2");
-							if( hex_color[i][j-1] == 0 ) hex_color[i][j-1] = 2;
+							if( hex_color_num[i][j-1] == 0 ) hex_color_num[i][j-1] = 2;
 						}
 						if( i != ( SQUARE_NUM - 1 ) ){
 							Log.w( "CheckCloseComp", "3");
-							if( hex_color[i+1][j] == 0 ) hex_color[i+1][j] = 2;
+							if( hex_color_num[i+1][j] == 0 ) hex_color_num[i+1][j] = 2;
 						}
 						if( j != ( SQUARE_NUM - 1 ) ){
 							Log.w( "CheckCloseComp", "4");
-							if( hex_color[i][j+1] == 0 ) hex_color[i][j+1] = 2;
+							if( hex_color_num[i][j+1] == 0 ) hex_color_num[i][j+1] = 2;
 						}
 						// チェック済み
 						Log.w( "CheckCloseComp", "I AM 3 i" + i);
 						Log.w( "CheckCloseComp", "I AM 3 j" + j);
-						hex_color[i][j] = 3;
+						hex_color_num[i][j] = 3;
 						Log.w( "CheckCloseComp", "aaa1");
 
 						// 検索対象が画面端に来たら、囲まれていない
@@ -487,7 +503,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 		for( i = 0; i < SQUARE_NUM; i++ ){
 			for( j = 0; j < SQUARE_NUM; j++ ){
-				if( hex_color[i][j] == 3 ){
+				if( hex_color_num[i][j] == 3 ){
 					if( mode == true){
 						Log.w( "FillClose", "i " + i);
 						Log.w( "FillClose", "j " + j);
@@ -506,14 +522,14 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 								paint);
 
 						// 色を記録
-						hex_color[i][j] = 1;
+						hex_color_num[i][j] = 1;
 
 						Log.w( "FillClose", "aaaaaaaaaaaaaaaaaa4");
 
 					}
 					// 0に戻しておく
 					else{
-						hex_color[i][j] = 0;
+						hex_color_num[i][j] = 0;
 					}
 				}
 			}
