@@ -99,7 +99,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	static int PLAYER_RADIUS;
 
 	// プレイヤーのスピード
-	final static int PLAYER_SPEED = 3;
+	final static int PLAYER_SPEED = 5;
 //	final static int PLAYER_SPEED = 5;
 
 	// プレイヤーの色
@@ -118,10 +118,10 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 	final static int SQUARE_LENGTH = 100;
 
-    // FPS
-    long run_start_time = 0, run_end_time = 0;
-    final static long FPS = 120;
-    final static long FPS_MSEC = 1000/FPS;
+	// FPS
+	long run_start_time = 0, run_end_time = 0;
+	final static long FPS = 120;
+	final static long FPS_MSEC = 1000/FPS;
 
 
 	SurfaceHolder surfaceHolder;
@@ -197,20 +197,20 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		Paint bgPaint = new Paint();
 		bgPaint.setColor(Color.argb(255, BACK_R, BACK_G, BACK_B));
 
-        // 起動時間
-        long StartTimeMillis = System.currentTimeMillis();
-        // 現在時間
-        long CurrentTimeMillis;
-        // 前回時間
-        long BeforeTimeMillis = StartTimeMillis;
+		// 起動時間
+		long StartTimeMillis = System.currentTimeMillis();
+		// 現在時間
+		long CurrentTimeMillis;
+		// 前回時間
+		long BeforeTimeMillis = StartTimeMillis;
 
 		boolean a = true;
-        // パスを設定
+		// パスを設定
 		Path path = new Path();
 
 		while(thread != null){
 			try{
-                run_start_time = System.currentTimeMillis();
+				run_start_time = System.currentTimeMillis();
 
 				canvas = surfaceHolder.lockCanvas();
 				canvas.drawRect( 0, 0, screen_width, screen_height, bgPaint);
@@ -230,11 +230,11 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					//Log.w( "DEBUG_DATA", "move_y " + move_y );
 				}
 
-                // 基本六角形
+				// 基本六角形
 				for( i = 0; i < HEX_NUM; i++ ){
 					for( j = 0; j < HEX_NUM; j++ ){
 
-                        // センター座標増加分
+						// センター座標増加分
 						// i - ( HEX_NUM / 2 ),j - ( HEX_NUM / 2 ) は左右対称にするため
 						add_x = HEX_LENGTH * (3.0f/2.0f) * (float)(i - ( HEX_NUM / 2 ));
 						if( (i - ( HEX_NUM / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM / 2 ));
@@ -271,7 +271,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 						paint.setStyle(Paint.Style.FILL_AND_STROKE);
 						path.reset();
 						// 右
-                        path.moveTo(center_x + HEX_LENGTH - HEX_WIDHT + add_x + move_x, center_y + add_y + move_y);
+						path.moveTo(center_x + HEX_LENGTH - HEX_WIDHT + add_x + move_x, center_y + add_y + move_y);
 						// 右下
 						path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y + move_y);
 						// 左下
@@ -285,17 +285,17 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 						path.close();
 						canvas.drawPath(path, paint);
 
-                    }
+					}
 				}
 
-                // 中心円の表示
+				// 中心円の表示
 				paint.setColor(Color.argb(255, 0, 0, 255));
 				paint.setAntiAlias(true);
 				paint.setStyle(Paint.Style.FILL_AND_STROKE);
 				// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
 				canvas.drawCircle(center_x, center_y, PLAYER_RADIUS, paint);
 
-                if( touch_flg ){
+				if( touch_flg ){
 					// セーブタップ位置に〇を表示
 					paint.setColor(Color.argb(120, 188, 200, 219)); // 水浅葱
 					paint.setStrokeWidth(20);
@@ -324,18 +324,18 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					//Log.w( "DEBUG_DATA", "CENTER direXY[1] " + indicatorXY[1] );
 				}
 
-                // 描画
+				// 描画
 				surfaceHolder.unlockCanvasAndPost(canvas);
 
-                // FPS
-                run_end_time = System.currentTimeMillis();
+				// FPS
+				run_end_time = System.currentTimeMillis();
 //                Log.w( "FPS", String.valueOf( 1000 / (run_end_time - run_start_time) ) );
-                if(run_end_time - run_start_time < FPS_MSEC){ // 1000 / 60 = 16.6666
-                    try {
-                        Thread.sleep(FPS_MSEC - (run_end_time - run_start_time));
-                    } catch (InterruptedException e) {
-                    }
-                }
+				if(run_end_time - run_start_time < FPS_MSEC){ // 1000 / 60 = 16.6666
+					try {
+						Thread.sleep(FPS_MSEC - (run_end_time - run_start_time));
+					} catch (InterruptedException e) {
+					}
+				}
 
 			} catch(Exception e){}
 		}
@@ -567,8 +567,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				break;
 		}
 
-	//	Log.w( "DEBUG_DATA", "tauch x " + now_touch_x );
-	//	Log.w( "DEBUG_DATA", "tauch y " + now_touch_y );
+		//	Log.w( "DEBUG_DATA", "tauch x " + now_touch_x );
+		//	Log.w( "DEBUG_DATA", "tauch y " + now_touch_y );
 		//move_x += 3;
 		//move_y += 3;
 		// 再描画の指示
