@@ -31,10 +31,16 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	int screen_width, screen_height;
 
 	// 現在タッチしている位置
-	int now_touch_x = 0,now_touch_y = 0;
+	int player1_now_touch_x = 0, player1_now_touch_y = 0;
+	int player2_now_touch_x = 0, player2_now_touch_y = 0;
 
 	// セーブしたタッチ位置
-	int save_touch_x = 0,save_touch_y = 0;
+	int player1_save_touch_x = 0, player1_save_touch_y = 0;
+	int player2_save_touch_x = 0, player2_save_touch_y = 0;
+
+	// タッチしたデータID
+	int player1_dataId = -1;
+	int player2_dataId = -1;
 
 	// Canvas 中心点
 	float center_x = 0.0f;
@@ -113,8 +119,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 
 	// 現在タッチ中かのフラグ
-	boolean touch_flg = false;
-
+	boolean player1_touch_flg = false;
+	boolean player2_touch_flg = false;
 
 	final static int SQUARE_LENGTH = 100;
 
@@ -133,7 +139,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		// 端末に合わせた各サイズの調整
 		if( MainActivity.real.x >= 1080 ) {
 			// 六角形の半径の長さ
-			HEX_LENGTH = 30.0f;
+			HEX_LENGTH = 50.0f;
 			// 六角形の線の太さ
 			HEX_WIDHT = 5.0f;
 			// 六角形の一辺の長さの比率
@@ -219,9 +225,9 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				center_x = canvas.getWidth()/2;
 				center_y = canvas.getHeight()/2;
 
-				if( touch_flg ){
+				if( player1_touch_flg ){
 					// タップ移動比率xyと指示マーカーのxyを取得
-					getIndicatorXY(save_touch_x, save_touch_y, now_touch_x, now_touch_y, indicatorDiff, indicatorXY);
+					getIndicatorXY(player1_save_touch_x, player1_save_touch_y, player1_now_touch_x, player1_now_touch_y, indicatorDiff, indicatorXY);
 					//Log.w( "DEBUG_DATA", "indicatorDiff[0] " + indicatorDiff[0] );
 					//Log.w( "DEBUG_DATA", "indicatorDiff[1] " + indicatorDiff[1] );
 					move_x = move_x - (indicatorDiff[0] / PLAYER_SPEED);
@@ -295,31 +301,33 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
 				canvas.drawCircle(center_x, center_y, PLAYER_RADIUS, paint);
 
-				if( touch_flg ){
+				if( player1_touch_flg ){
 					// セーブタップ位置に〇を表示
 					paint.setColor(Color.argb(120, 188, 200, 219)); // 水浅葱
 					paint.setStrokeWidth(20);
 					paint.setStyle(Paint.Style.STROKE);
 					paint.setAntiAlias(true);
-					canvas.drawCircle(save_touch_x, save_touch_y, DIRECTION_RADIUS, paint);
+					canvas.drawCircle(player1_save_touch_x, player1_save_touch_y, DIRECTION_RADIUS, paint);
 
 					// セーブタップ位置を中心にタップ〇移動範囲を表示
 					paint.setColor(Color.argb(120, 188, 200, 219)); // 水浅葱
 					paint.setStrokeWidth(20);
 					paint.setStyle(Paint.Style.STROKE);
 					paint.setAntiAlias(true);
-					canvas.drawCircle(save_touch_x, save_touch_y, DIRECTION_RADIUS * 3, paint);
+					canvas.drawCircle(player1_save_touch_x, player1_save_touch_y, DIRECTION_RADIUS * 3, paint);
 
 					// 移動方向に〇を表示
-					paint.setColor(Color.argb(120, 235, 121, 136)); // 水浅葱
+					paint.setColor(Color.argb(120, 235, 121, 136)); // ピンク
 					paint.setStrokeWidth(20);
 					paint.setStyle(Paint.Style.STROKE);
 					paint.setAntiAlias(true);
 
-					canvas.drawCircle(indicatorXY[0], indicatorXY[1], DIRECTION_RADIUS, paint);
-
-					//Log.w( "DEBUG_DATA", "CENTER save_touch_x " + save_touch_x );
-					//Log.w( "DEBUG_DATA", "CENTER save_touch_y " + save_touch_y );
+					// 計算が完了していたら
+					if( indicatorXY[0] != 0 && indicatorXY[1] != 0){
+						canvas.drawCircle(indicatorXY[0], indicatorXY[1], DIRECTION_RADIUS, paint);
+					}
+					//Log.w( "DEBUG_DATA", "CENTER player1_save_touch_x " + player1_save_touch_x );
+					//Log.w( "DEBUG_DATA", "CENTER player1_save_touch_y " + player1_save_touch_y );
 					//Log.w( "DEBUG_DATA", "CENTER direXY[0] " + indicatorXY[0] );
 					//Log.w( "DEBUG_DATA", "CENTER direXY[1] " + indicatorXY[1] );
 				}
@@ -547,32 +555,147 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 
 
-		// タッチしている位置取得
-		now_touch_x = (int) event.getX();
-		now_touch_y = (int) event.getY();
+		// タッチしている数を取得
+		int count = event.getPointerCount();
+		//タッチアクションの情報を取得
+		int action = event.getAction();
+		int dataId;
+		int pointId;
+		float x,y;
 
-		switch(event.getAction()){
-			// 触る
+
+		Log.w( "AAAAAxx21aaaaaaaaaaaaa2", "player1_save_touch_x " + player1_save_touch_x );
+
+		for(int i=0; i<count; i++) {
+			// ポインタID
+			pointId = event.getPointerId(i);
+			// データID
+			dataId = event.findPointerIndex(pointId);
+			x = event.getX(dataId);
+			y = event.getY(dataId);
+
+			if (dataId == -1) continue;
+			Log.w( "AAAAAxx1zzz", "player1_now_touch_x " + player1_now_touch_x);
+			Log.w( "AAAAAxx1zzz", "player1_save_touch_x " + player1_save_touch_x);
+			Log.w( "AAAAAxx1", "player1_dataId " + player1_dataId);
+			Log.w( "AAAAAxx1", "MainActivity.real.y " + MainActivity.real.y);
+			Log.w( "AAAAAxx1", "y " + y);
+
+			// Player1の情報
+			if(dataId == player1_dataId){
+				// タッチしている位置取得
+				player1_now_touch_x = (int)x;
+				player1_now_touch_y = (int)y;
+			}
+			// 画面上半分の位置をタップ
+			else if(dataId == player2_dataId){
+				// タッチしている位置取得
+				player2_now_touch_x = (int)x;
+				player2_now_touch_y = (int)y;
+			}
+			Log.i("tag2", "DataIndex[" + dataId + "] PointIndex[" + pointId + "] x[" + x + "]");
+			Log.i("tag2", "DataIndex[" + dataId + "] PointIndex[" + pointId + "] y[" + y + "]");
+		}
+
+		dataId = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+		x = event.getX(dataId);
+		y = event.getY(dataId);
+
+		switch(action & MotionEvent.ACTION_MASK) {
 			case MotionEvent.ACTION_DOWN:
+				Log.w( "AAAAAxx21", "dataId " + dataId );
+				Log.w( "AAAAAxx21", "player1_dataId " + player1_dataId );
 
-				save_touch_x = now_touch_x;
-				save_touch_y = now_touch_y;
+				if(MainActivity.real.y / 2 < y && player1_dataId == -1){
+					player1_save_touch_x = (int)x;
+					player1_save_touch_y = (int)y;
+					player1_now_touch_x = (int)x;
+					player1_now_touch_y = (int)y;
+					player1_touch_flg = true;
+					player1_dataId = dataId;
 
-				touch_flg = true;
+				}
+				else if(MainActivity.real.y / 2 > y && player2_dataId == -1){
+					player2_save_touch_x = (int)x;
+					player2_save_touch_y = (int)y;
+					player2_now_touch_x = (int)x;
+					player2_now_touch_y = (int)y;
+					player2_touch_flg = true;
+					player2_dataId = dataId;
+				}
 
-//				paint.setStyle(Paint.Style.FILL);
+				Log.i("tag1", "Touch Down" + " count=" + count + ", DataIndex=" + dataId);
+				break;
+			case MotionEvent.ACTION_POINTER_DOWN:
+				Log.w( "AAAAAxx22", "dataId " + dataId );
+				Log.w( "AAAAAxx22", "player1_dataId " + player1_dataId );
 
-				//Log.w( "DEBUG_DATA","DOWN" );
+				if(MainActivity.real.y / 2 < y && player1_dataId == -1){
+					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
+					player1_save_touch_x = (int)x;
+					player1_save_touch_y = (int)y;
+					player1_now_touch_x = (int)x;
+					player1_now_touch_y = (int)y;
+					player1_touch_flg = true;
+					player1_dataId = dataId;
+				}
+				else if(MainActivity.real.y / 2 > y && player2_dataId == -1){
+					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa2 ");
+					player2_save_touch_x = (int)x;
+					player2_save_touch_y = (int)y;
+					player2_now_touch_x = (int)x;
+					player2_now_touch_y = (int)y;
+					player2_touch_flg = true;
+					player2_dataId = dataId;
+				}
+
+				Log.i("tag1", "Touch PTR Down" + " count=" + count + ", DataIndex=" + dataId);
 				break;
 			case MotionEvent.ACTION_UP:
+				Log.w( "AAAAAxx23", "dataId " + dataId );
+				Log.w( "AAAAAxx23", "player1_dataId " + player1_dataId );
 
-				touch_flg = false;
+				if(player1_dataId == dataId){
+					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
+					player1_touch_flg = false;
+					player1_dataId = -1;
+				}
+				else if(player1_dataId == dataId){
+					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa2 ");
+					player2_touch_flg = false;
+					player2_dataId = -1;
+				}
 
+				Log.i("tag1", "Touch Up" + " count=" + count + ", DataIndex=" + dataId);
+				break;
+			case MotionEvent.ACTION_POINTER_UP:
+				Log.w( "AAAAAxx24", "dataId " + dataId );
+				Log.w( "AAAAAxx24", "player1_dataId " + player1_dataId );
+				if(player1_dataId == dataId){
+					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
+					player1_touch_flg = false;
+					player1_dataId = -1;
+				}
+				else if(player1_dataId == dataId){
+					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa2 ");
+					player2_touch_flg = false;
+					player2_dataId = -1;
+				}
+
+				Log.i("tag1", "Touch PTR Up" + " count=" + count + ", DataIndex=" + dataId);
 				break;
 		}
 
-		//	Log.w( "DEBUG_DATA", "tauch x " + now_touch_x );
-		//	Log.w( "DEBUG_DATA", "tauch y " + now_touch_y );
+
+
+
+
+
+
+
+
+		//	Log.w( "DEBUG_DATA", "tauch x " + player1_now_touch_x );
+		//	Log.w( "DEBUG_DATA", "tauch y " + player1_now_touch_y );
 		//move_x += 3;
 		//move_y += 3;
 		// 再描画の指示
@@ -620,10 +743,10 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		sa_x = abs(save_touch_x - now_touch_x);
 		sa_y = abs(save_touch_y - now_touch_y);
 
-		//Log.w( "DEBUG_DATA", "save_touch_x " + save_touch_x  );
-		//Log.w( "DEBUG_DATA", "save_touch_y " + save_touch_y  );
-		//Log.w( "DEBUG_DATA", "now_touch_x " + now_touch_x  );
-		//Log.w( "DEBUG_DATA", "now_touch_y " + now_touch_y  );
+		//Log.w( "DEBUG_DATA", "player1_save_touch_x " + player1_save_touch_x  );
+		//Log.w( "DEBUG_DATA", "player1_save_touch_y " + player1_save_touch_y  );
+		//Log.w( "DEBUG_DATA", "player1_now_touch_x " + player1_now_touch_x  );
+		//Log.w( "DEBUG_DATA", "player1_now_touch_y " + player1_now_touch_y  );
 
 		//Log.w( "DEBUG_DATA", "sa_x " + sa_x  );
 		//Log.w( "DEBUG_DATA", "sa_y " + sa_y  );
