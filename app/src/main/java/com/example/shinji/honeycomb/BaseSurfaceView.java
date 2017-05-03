@@ -133,9 +133,9 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		// 端末に合わせた各サイズの調整
 		if( MainActivity.real.x >= 1080 ) {
 			// 六角形の半径の長さ
-			HEX_LENGTH = 100.0f;
+			HEX_LENGTH = 30.0f;
 			// 六角形の線の太さ
-			HEX_WIDHT = 20.0f;
+			HEX_WIDHT = 5.0f;
 			// 六角形の一辺の長さの比率
 			HEX_RATIO = 0.86f;
 			// 移動マーカーの半径
@@ -542,12 +542,16 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 	// タッチイベントを処理するためOverrideする
 	@Override
-	public boolean onTouchEvent(MotionEvent e) {
-		// タッチしている位置取得
-		now_touch_x = (int) e.getX();
-		now_touch_y = (int) e.getY();
+	public boolean onTouchEvent(MotionEvent event) {
 
-		switch(e.getAction()){
+
+
+
+		// タッチしている位置取得
+		now_touch_x = (int) event.getX();
+		now_touch_y = (int) event.getY();
+
+		switch(event.getAction()){
 			// 触る
 			case MotionEvent.ACTION_DOWN:
 
