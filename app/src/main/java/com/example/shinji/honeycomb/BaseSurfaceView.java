@@ -151,9 +151,9 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		}
 		else if( MainActivity.real.x >= 720 ){
 			// 六角形の半径の長さ
-			HEX_LENGTH = 50.0f;
+			HEX_LENGTH = 25.0f;
 			// 六角形の線の太さ/2
-			HEX_WIDHT = 10.0f;
+			HEX_WIDHT = 5.0f;
 			// 六角形の一辺の長さの比率
 			HEX_RATIO = 0.86f;
 			// 移動マーカーの半径
