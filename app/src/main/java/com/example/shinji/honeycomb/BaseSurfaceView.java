@@ -126,7 +126,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 	// FPS
 	long run_start_time = 0, run_end_time = 0;
-	final static long FPS = 120;
+	final static long FPS = 180;
 	final static long FPS_MSEC = 1000/FPS;
 
 
@@ -277,29 +277,30 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 						paint.setStyle(Paint.Style.FILL_AND_STROKE);
 						path.reset();
 						// 右
-						path.moveTo(center_x + HEX_LENGTH - HEX_WIDHT + add_x + move_x, center_y + add_y + move_y);
+						path.moveTo(center_x + HEX_LENGTH - HEX_WIDHT + add_x, center_y + add_y);
 						// 右下
-						path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y + move_y);
+						path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y);
 						// 左下
-						path.lineTo(center_x - (HEX_LENGTH / 2) + (HEX_WIDHT / 2) + add_x + move_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y + move_y);
+						path.lineTo(center_x - (HEX_LENGTH / 2) + (HEX_WIDHT / 2) + add_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y);
 						// 左
-						path.lineTo(center_x - HEX_LENGTH + HEX_WIDHT + add_x + move_x, center_y + add_y + move_y);
+						path.lineTo(center_x - HEX_LENGTH + HEX_WIDHT + add_x, center_y + add_y);
 						// 左上
-						path.lineTo(center_x - (HEX_LENGTH / 2) + (HEX_WIDHT / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y + move_y);
+						path.lineTo(center_x - (HEX_LENGTH / 2) + (HEX_WIDHT / 2) + add_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y);
 						// 右上
-						path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x + move_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y + move_y);
+						path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y);
 						path.close();
 						canvas.drawPath(path, paint);
 
 					}
 				}
 
+
 				// 中心円の表示
-				paint.setColor(Color.argb(255, 0, 0, 255));
+				paint.setColor(Color.argb(255, 250, 0, 50));
 				paint.setAntiAlias(true);
 				paint.setStyle(Paint.Style.FILL_AND_STROKE);
 				// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
-				canvas.drawCircle(center_x, center_y, PLAYER_RADIUS, paint);
+				canvas.drawCircle(center_x - move_x, center_y - move_y, PLAYER_RADIUS, paint);
 
 				if( player1_touch_flg ){
 					// セーブタップ位置に〇を表示
@@ -331,6 +332,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					//Log.w( "DEBUG_DATA", "CENTER direXY[0] " + indicatorXY[0] );
 					//Log.w( "DEBUG_DATA", "CENTER direXY[1] " + indicatorXY[1] );
 				}
+
 
 				// 描画
 				surfaceHolder.unlockCanvasAndPost(canvas);
