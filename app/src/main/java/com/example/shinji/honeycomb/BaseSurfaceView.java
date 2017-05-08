@@ -495,8 +495,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 			// 閉じられているところを塗る
 			FillClose(kakujituni_close_flg,canvas);
 		}
-
-
 	}
 
 	// 完全に閉じらているか確認し、３番をセットする
