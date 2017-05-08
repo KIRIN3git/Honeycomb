@@ -25,10 +25,15 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int SQUARE_NUM = 11;
 
 	// 六角形の縦、横の数
-	final static int HEX_NUM = 21;
+	final static int HEX_NUM_ROW = 19;
+    final static int HEX_NUM_COL = 19;
 
 	// スクリーンの大きさ(px)
 	int screen_width, screen_height;
+
+    // Canvas 中心点
+    float center_x = 0.0f;
+    float center_y = 0.0f;
 
 	// 現在タッチしている位置
 	int p1_now_touch_x = 0, p1_now_touch_y = 0;
@@ -42,53 +47,133 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	int p1_dataId = -1;
 	int p2_dataId = -1;
 
-	// Canvas 中心点
-	float center_x = 0.0f;
-	float center_y = 0.0f;
+    // プレイヤーの初期位置
+    static int p1_start_position = -100;
+    static int p2_start_position = 100;
 
+    // プレイヤーの色
+
+    // 緑
+    final static int P1_R = 50  ;
+    final static int P1_G = 205  ;
+    final static int P1_B = 50;
+    // 赤
+//    final static int P2_R = 255 ;
+//    final static int P2_G = 127 ;
+//    final static int P2_B = 127;
+    // 青
+    final static int P2_R = 127 ;
+    final static int P2_G = 127 ;
+    final static int P2_B = 255;
+
+
+    // ひとつ前の塗りつぶし座標
+    int p1_before_fill_i = -1;
+    int p1_before_fill_j = -1;
+    int p2_before_fill_i = -1;
+    int p2_before_fill_j = -1;
+
+    // 指示器のXY位置
+    int p1_indicatorXY[] = {0,0};
+    int p2_indicatorXY[] = {0,0};
+
+    // セーブ位置と指示器の差分
+    int p1_indicatorDiff[] = {0,0};
+    int p2_indicatorDiff[] = {0,0};
+
+    // 現在タッチ中かのフラグ
+    boolean p1_touch_flg = false;
+    boolean p2_touch_flg = false;
 	// 全体の移動位置
-	int p1_move_x = 0, p1_move_y = 0;
-	int p2_move_x = 0, p2_move_y = 0;
+	int p1_move_x = 0, p1_move_y = p1_start_position;
+	int p2_move_x = 0, p2_move_y = p2_start_position;
 
 	// 背景RGB
-	final static int BACK_R = 188;
-	final static int BACK_G = 189;
-	final static int BACK_B = 194;
+	final static int BACK_R = 200 ;
+	final static int BACK_G = 200 ;
+	final static int BACK_B = 200 ;
 
 	final static int PLAYER_NO = 1;
 
 	// 六角形の塗りつぶし確認
-	int hex_color_num[][] = {
-			{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3}
-	};
+    int hex_color_num[][] = {
+            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3}
+    };
+
+    //19
+//    int hex_color_num[][] = {
+//            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3}
+//    };
+
+    // 21
+//    int hex_color_num[][] = {
+//            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3}
+//    };
 
 	int hex_color_rgb[][] = {
 			{255,255,255},
-			{0,0,255},
-			{255,0,0},
-			{0,0,0}
+            {127 ,255 ,127}, //黄緑
+//		{255 ,193 ,255}, //ピンク
+//		{255 ,188 ,188}, //薄赤
+            {127 ,255 ,255},//水色
+			{129 ,129 ,129}
 	};
-
 
 	// 六角形の半径の長さ
 	static float HEX_LENGTH = 50.0f;
@@ -109,32 +194,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int PLAYER_SPEED = 5;
 //	final static int PLAYER_SPEED = 5;
 
-	// プレイヤーの色
-	final static int P1_R = 0;
-	final static int P1_G = 45;
-	final static int P1_B = 230;
-
-	final static int P2_R = 220;
-	final static int P2_G = 0;
-	final static int P2_B = 21;
-
-	// ひとつ前の塗りつぶし座標
-	int p1_before_fill_i = -1;
-	int p1_before_fill_j = -1;
-	int p2_before_fill_i = -1;
-	int p2_before_fill_j = -1;
-
-	// 指示器のXY位置
-	int p1_indicatorXY[] = {0,0};
-	int p2_indicatorXY[] = {0,0};
-
-	// セーブ位置と指示器の差分
-	int p1_indicatorDiff[] = {0,0};
-	int p2_indicatorDiff[] = {0,0};
-
-	// 現在タッチ中かのフラグ
-	boolean p1_touch_flg = false;
-	boolean p2_touch_flg = false;
 
 	final static int SQUARE_LENGTH = 100;
 
@@ -220,10 +279,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		while(thread != null){
 			try{
 
-
-				Log.w( "IIIIIIIIIIIIIIIIIII", "p1_touch_flg[" + p1_touch_flg + "]");
-				Log.w( "IIIIIIIIIIIIIIIIIII", "p2_touch_flg[" + p2_touch_flg + "]");
-
 				run_start_time = System.currentTimeMillis();
 
 				canvas = surfaceHolder.lockCanvas();
@@ -280,14 +335,14 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		// パスを設定
 		Path path = new Path();
 
-		for( int i = 0; i < HEX_NUM; i++ ){
-			for( int j = 0; j < HEX_NUM; j++ ){
+		for( int i = 0; i < HEX_NUM_COL; i++ ){
+			for( int j = 0; j < HEX_NUM_ROW; j++ ){
 
 				// 移動分
 				// i - ( HEX_NUM / 2 ),j - ( HEX_NUM / 2 ) は左右対称にするため
-				add_x = HEX_LENGTH * (3.0f/2.0f) * (float)(i - ( HEX_NUM / 2 ));
-				if( (i - ( HEX_NUM / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM / 2 ));
-				else  add_y = HEX_LENGTH * HEX_RATIO + ( (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM / 2 )));
+				add_x = HEX_LENGTH * (3.0f/2.0f) * (float)(i - ( HEX_NUM_ROW / 2 ));
+				if( (i - ( HEX_NUM_ROW / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM_COL / 2 ));
+				else  add_y = HEX_LENGTH * HEX_RATIO + ( (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM_COL / 2 )));
 
 				// すでにペイント済み、枠内に中心点が入ったら
 				// 一旦、円で計算
@@ -296,7 +351,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					if( hex_color_num[i][j] == 3 ){
 						p1_move_x = 0;
 						p1_move_y = 0;
-
 					}
 					// 新規塗りだったら
 					else if( hex_color_num[i][j] != PLAYER_NO ){
@@ -359,15 +413,15 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 
 		if( player_no == 1 ){
-			p1_start_x = center_x - 30;
-			p1_start_y = center_y - 30;
+			p1_start_x = center_x;
+			p1_start_y = center_y;
 			paint.setColor(Color.argb(255, P1_R, P1_G, P1_B));
 			// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
 			canvas.drawCircle(p1_start_x - p1_move_x, p1_start_y - p1_move_y, PLAYER_RADIUS, paint);
 		}
 		else if( player_no == 2 ){
-			p2_start_x = center_x - 30;
-			p2_start_y = center_y - 30;
+			p2_start_x = center_x;
+			p2_start_y = center_y;
 			paint.setColor(Color.argb(255, P2_R, P2_G, P2_B));
 			// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
 			canvas.drawCircle(p2_start_x - p2_move_x, p2_start_y - p2_move_y, PLAYER_RADIUS, paint);
