@@ -25,8 +25,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int SQUARE_NUM = 11;
 
 	// 六角形の縦、横の数
-	final static int HEX_NUM_ROW = 19;
-    final static int HEX_NUM_COL = 19;
+	final static int HEX_NUM_ROW = 15;
+    final static int HEX_NUM_COL = 16;
 
 	// スクリーンの大きさ(px)
 	int screen_width, screen_height;
@@ -98,12 +98,22 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	// 六角形の塗りつぶし確認
 
 	int hex_color_num[][] = {
-			{3,3,3,3,3},
-			{3,0,0,0,3},
-			{3,0,0,0,3},
-			{3,0,0,0,3},
-			{3,0,0,0,3},
-			{3,3,3,3,3}
+			{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3}
 	};
 
 //	int hex_color_num[][] = {
