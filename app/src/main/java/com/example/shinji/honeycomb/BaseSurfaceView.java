@@ -96,75 +96,39 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int PLAYER_NO = 1;
 
 	// 六角形の塗りつぶし確認
-    int hex_color_num[][] = {
-            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3}
-    };
 
-    //19
-//    int hex_color_num[][] = {
-//            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3}
-//    };
+	int hex_color_num[][] = {
+			{3,3,3,3,3},
+			{3,0,0,0,3},
+			{3,0,0,0,3},
+			{3,0,0,0,3},
+			{3,0,0,0,3},
+			{3,3,3,3,3}
+	};
 
-    // 21
-//    int hex_color_num[][] = {
-//            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-//            {3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3}
-//    };
+//	int hex_color_num[][] = {
+//			{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+//			{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3}
+//	};
 
 	int hex_color_rgb[][] = {
 			{255,255,255},
@@ -174,6 +138,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
             {127 ,255 ,255},//水色
 			{129 ,129 ,129}
 	};
+
 
 	// 六角形の半径の長さ
 	static float HEX_LENGTH = 50.0f;
@@ -279,6 +244,9 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		while(thread != null){
 			try{
 
+//				Log.w( "IIIIIIIIIIIIIIIIIII", "p1_touch_flg[" + p1_touch_flg + "]");
+//				Log.w( "IIIIIIIIIIIIIIIIIII", "p2_touch_flg[" + p2_touch_flg + "]");
+
 				run_start_time = System.currentTimeMillis();
 
 				canvas = surfaceHolder.lockCanvas();
@@ -335,54 +303,57 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		// パスを設定
 		Path path = new Path();
 
-		for( int i = 0; i < HEX_NUM_COL; i++ ){
-			for( int j = 0; j < HEX_NUM_ROW; j++ ){
+		for( int col_i = 0; col_i < HEX_NUM_COL; col_i++ ){
+			for( int row_i = 0; row_i < HEX_NUM_ROW; row_i++ ){
 
 				// 移動分
 				// i - ( HEX_NUM / 2 ),j - ( HEX_NUM / 2 ) は左右対称にするため
-				add_x = HEX_LENGTH * (3.0f/2.0f) * (float)(i - ( HEX_NUM_ROW / 2 ));
-				if( (i - ( HEX_NUM_ROW / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM_COL / 2 ));
-				else  add_y = HEX_LENGTH * HEX_RATIO + ( (HEX_LENGTH * HEX_RATIO) * 2 * (j - ( HEX_NUM_COL / 2 )));
+				add_x = HEX_LENGTH * (3.0f/2.0f) * (float)(row_i - ( HEX_NUM_ROW / 2 ));
+				if( (row_i - ( HEX_NUM_ROW / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 ));
+				else  add_y = HEX_LENGTH * HEX_RATIO + ( (HEX_LENGTH * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 )));
+				Log.w( "LOG1", "col_i[" + col_i + "] add_x[" + add_x + "]");
+				Log.w( "LOG1", "row_i[" + row_i + "] add_y[" + add_y + "]");
 
 				// すでにペイント済み、枠内に中心点が入ったら
 				// 一旦、円で計算
 				if( ((add_x + p1_move_x) * (add_x + p1_move_x) + (add_y + p1_move_y) * (add_y + p1_move_y)) < Math.pow(HEX_LENGTH,2) ){
 					// 壁にぶつかったら
-					if( hex_color_num[i][j] == 3 ){
+					if( hex_color_num[col_i][row_i] == 3 ){
 						p1_move_x = 0;
 						p1_move_y = 0;
+
 					}
 					// 新規塗りだったら
-					else if( hex_color_num[i][j] != PLAYER_NO ){
+					else if( hex_color_num[col_i][row_i] != PLAYER_NO ){
 						// 色を記録
-						hex_color_num[i][j] = PLAYER_NO;
+						hex_color_num[col_i][row_i] = PLAYER_NO;
 						// 囲まれていたら色を塗る
 //								CheckCloseAndFill(i,j,canvas);
-						p1_before_fill_i = i;
-						p1_before_fill_j = j;
+						p1_before_fill_i = col_i;
+						p1_before_fill_j = row_i;
 					}
 				}
 				if( ((add_x + p2_move_x) * (add_x + p2_move_x) + (add_y + p2_move_y) * (add_y + p2_move_y)) < Math.pow(HEX_LENGTH,2) ){
 					// 壁にぶつかったら
-					if( hex_color_num[i][j] == 3 ){
+					if( hex_color_num[col_i][row_i] == 3 ){
 						p2_move_x = 0;
 						p2_move_y = 0;
 
 					}
 					// 新規塗りだったら
-					else if( hex_color_num[i][j] != 2 ){
+					else if( hex_color_num[col_i][row_i] != 2 ){
 						// 色を記録
-						hex_color_num[i][j] = 2;
+						hex_color_num[col_i][row_i] = 2;
 						// 囲まれていたら色を塗る
 //								CheckCloseAndFill(i,j,canvas);
-						p2_before_fill_i = i;
-						p2_before_fill_j = j;
+						p2_before_fill_i = col_i;
+						p2_before_fill_j = row_i;
 					}
 				}
 
 
 				// 六角形の描画
-				paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[i][j]][0], hex_color_rgb[hex_color_num[i][j]][1], hex_color_rgb[hex_color_num[i][j]][2]));
+				paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[col_i][row_i]][0], hex_color_rgb[hex_color_num[col_i][row_i]][1], hex_color_rgb[hex_color_num[col_i][row_i]][2]));
 				paint.setStrokeWidth(HEX_WIDHT);
 				paint.setStyle(Paint.Style.FILL_AND_STROKE);
 				path.reset();
@@ -413,15 +384,15 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 
 		if( player_no == 1 ){
-			p1_start_x = center_x;
-			p1_start_y = center_y;
+			p1_start_x = center_x - 30;
+			p1_start_y = center_y - 30;
 			paint.setColor(Color.argb(255, P1_R, P1_G, P1_B));
 			// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
 			canvas.drawCircle(p1_start_x - p1_move_x, p1_start_y - p1_move_y, PLAYER_RADIUS, paint);
 		}
 		else if( player_no == 2 ){
-			p2_start_x = center_x;
-			p2_start_y = center_y;
+			p2_start_x = center_x - 30;
+			p2_start_y = center_y - 30;
 			paint.setColor(Color.argb(255, P2_R, P2_G, P2_B));
 			// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
 			canvas.drawCircle(p2_start_x - p2_move_x, p2_start_y - p2_move_y, PLAYER_RADIUS, paint);
