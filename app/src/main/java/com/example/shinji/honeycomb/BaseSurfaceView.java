@@ -99,10 +99,10 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 	int hex_color_num[][] = {
 			{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,3,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,3,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,3,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,3,0,0,0,0,0,0,0,0,0,0,0,0,3},
 			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
 			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
 			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
@@ -166,7 +166,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	static int PLAYER_RADIUS;
 
 	// プレイヤーのスピード
-	final static int PLAYER_SPEED = 5;
+	final static int PLAYER_SPEED = 10;
 //	final static int PLAYER_SPEED = 5;
 
 
@@ -177,6 +177,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static long FPS = 180;
 	final static long FPS_MSEC = 1000/FPS;
 
+	static boolean countdown_flg;
 
 	SurfaceHolder surfaceHolder;
 	Thread thread;
@@ -223,6 +224,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		}
 
 
+		countdown_flg = true;
+
 		surfaceHolder = getHolder();
 		surfaceHolder.addCallback(this);
 
@@ -251,13 +254,15 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		// 前回時間
 		long BeforeTimeMillis = StartTimeMillis;
 
+		String CountText = "";
+
 		while(thread != null){
 			try{
 
 //				Log.w( "IIIIIIIIIIIIIIIIIII", "p1_touch_flg[" + p1_touch_flg + "]");
 //				Log.w( "IIIIIIIIIIIIIIIIIII", "p2_touch_flg[" + p2_touch_flg + "]");
 
-				run_start_time = System.currentTimeMillis();
+				if(!countdown_flg) run_start_time = System.currentTimeMillis();
 
 				canvas = surfaceHolder.lockCanvas();
 				canvas.drawRect( 0, 0, screen_width, screen_height, bgPaint);
@@ -266,29 +271,38 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				center_x = canvas.getWidth()/2;
 				center_y = canvas.getHeight()/2;
 
-				if( p1_touch_flg ){
-					// タップ移動比率xyと指示マーカーのxyを取得
-					getIndicatorXY(p1_save_touch_x, p1_save_touch_y, p1_now_touch_x, p1_now_touch_y, p1_indicatorDiff, p1_indicatorXY);
-					p1_move_x = p1_move_x - (p1_indicatorDiff[0] / PLAYER_SPEED);
-					p1_move_y = p1_move_y - (p1_indicatorDiff[1] / PLAYER_SPEED);
-				}
-				if( p2_touch_flg ){
-					// タップ移動比率xyと指示マーカーのxyを取得
-					getIndicatorXY(p2_save_touch_x, p2_save_touch_y, p2_now_touch_x, p2_now_touch_y, p2_indicatorDiff, p2_indicatorXY);
-					p2_move_x = p2_move_x - (p2_indicatorDiff[0] / PLAYER_SPEED);
-					p2_move_y = p2_move_y - (p2_indicatorDiff[1] / PLAYER_SPEED);
-				}
+				// タップ移動比率xyと指示マーカーのxyを取得
+				if(!countdown_flg) GetMoveXY();
 
 				// 基本六角形
-				DrawHex(paint,canvas);
+				DrawHex(paint, canvas);
 
 				// 中心円の表示
-				DrawPlayer(paint,canvas,1);
-				DrawPlayer(paint,canvas,2);
+				DrawPlayer(paint, canvas, 1);
+				DrawPlayer(paint, canvas, 2);
 
-				// 指示器の表示
-				DrawIndicator(paint,canvas,1);
-				DrawIndicator(paint,canvas,2);
+				if(!countdown_flg){
+					// 指示器の表示
+					DrawIndicator(paint, canvas, 1);
+					DrawIndicator(paint, canvas, 2);
+				}
+				else{
+					paint.setTextSize(200);
+					paint.setColor(Color.RED);
+					if( System.currentTimeMillis() - StartTimeMillis < 1000 ) CountText = "3";
+					else if(  System.currentTimeMillis() - StartTimeMillis < 2000 ) CountText = "2";
+					else if( System.currentTimeMillis() - StartTimeMillis < 3000 ) CountText = "1";
+					else if( System.currentTimeMillis() - StartTimeMillis < 3500 ) CountText = "START";
+					else countdown_flg = false;
+					canvas.drawText(CountText, center_x - paint.measureText(CountText) / 2 , center_y - ((paint.descent() + paint.ascent()) / 2), paint);
+					Log.w( "AAAAAtt", "center_x" + center_x);
+					Log.w( "AAAAAtt", "center_y" + center_y);
+					Log.w( "AAAAAtt", "paint.descent()" + paint.descent());
+					Log.w( "AAAAAtt", "paint.ascent()" + paint.ascent());
+					Log.w( "AAAAAtt", "paint.ascent()" + paint.measureText(CountText));
+
+
+				}
 
 				// 描画
 				surfaceHolder.unlockCanvasAndPost(canvas);
@@ -307,6 +321,21 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		}
 	}
 
+	public void GetMoveXY(){
+		if( p1_touch_flg ){
+			// タップ移動比率xyと指示マーカーのxyを取得
+			getIndicatorXY(p1_save_touch_x, p1_save_touch_y, p1_now_touch_x, p1_now_touch_y, p1_indicatorDiff, p1_indicatorXY);
+			p1_move_x = p1_move_x - (p1_indicatorDiff[0] / PLAYER_SPEED);
+			p1_move_y = p1_move_y - (p1_indicatorDiff[1] / PLAYER_SPEED);
+		}
+		if( p2_touch_flg ){
+			// タップ移動比率xyと指示マーカーのxyを取得
+			getIndicatorXY(p2_save_touch_x, p2_save_touch_y, p2_now_touch_x, p2_now_touch_y, p2_indicatorDiff, p2_indicatorXY);
+			p2_move_x = p2_move_x - (p2_indicatorDiff[0] / PLAYER_SPEED);
+			p2_move_y = p2_move_y - (p2_indicatorDiff[1] / PLAYER_SPEED);
+		}
+
+	}
 	public void DrawHex(Paint paint,Canvas canvas){
 		float add_x,add_y;
 
@@ -394,15 +423,15 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 
 		if( player_no == 1 ){
-			p1_start_x = center_x - 30;
-			p1_start_y = center_y - 30;
+			p1_start_x = center_x;
+			p1_start_y = center_y;
 			paint.setColor(Color.argb(255, P1_R, P1_G, P1_B));
 			// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
 			canvas.drawCircle(p1_start_x - p1_move_x, p1_start_y - p1_move_y, PLAYER_RADIUS, paint);
 		}
 		else if( player_no == 2 ){
-			p2_start_x = center_x - 30;
-			p2_start_y = center_y - 30;
+			p2_start_x = center_x;
+			p2_start_y = center_y;
 			paint.setColor(Color.argb(255, P2_R, P2_G, P2_B));
 			// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
 			canvas.drawCircle(p2_start_x - p2_move_x, p2_start_y - p2_move_y, PLAYER_RADIUS, paint);
