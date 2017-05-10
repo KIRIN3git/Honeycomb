@@ -223,14 +223,12 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 			PLAYER_RADIUS = 20;
 		}
 
-
 		countdown_flg = true;
 
 		surfaceHolder = getHolder();
 		surfaceHolder.addCallback(this);
 
 //		hex_color_num = new int[SQUARE_NUM][SQUARE_NUM];
-
 
 	}
 
@@ -249,10 +247,14 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 		// 起動時間
 		long StartTimeMillis = System.currentTimeMillis();
+		// 戦い始め時間
+		long FightTimeMillis = 0;
 		// 現在時間
 		long CurrentTimeMillis;
 		// 前回時間
 		long BeforeTimeMillis = StartTimeMillis;
+
+		long TimeLimitMillis = 60000;
 
 		String CountText = "";
 
@@ -285,23 +287,27 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					// 指示器の表示
 					DrawIndicator(paint, canvas, 1);
 					DrawIndicator(paint, canvas, 2);
+
+					long ss = ( TimeLimitMillis - (System.currentTimeMillis() - FightTimeMillis) ) / 1000;
+					long ms = ( TimeLimitMillis - (System.currentTimeMillis() - FightTimeMillis) ) - ss * 1000;
+
+					paint.setTextSize(200);
+					paint.setColor(Color.RED);
+					canvas.drawText(String.format("%02d.%02d", ss, ms), center_x - paint.measureText(CountText) / 2 , center_y - ((paint.descent() + paint.ascent()) / 2), paint);
 				}
 				else{
+					// カウントダウン
 					paint.setTextSize(200);
 					paint.setColor(Color.RED);
 					if( System.currentTimeMillis() - StartTimeMillis < 1000 ) CountText = "3";
-					else if(  System.currentTimeMillis() - StartTimeMillis < 2000 ) CountText = "2";
+					else if( System.currentTimeMillis() - StartTimeMillis < 2000 ) CountText = "2";
 					else if( System.currentTimeMillis() - StartTimeMillis < 3000 ) CountText = "1";
 					else if( System.currentTimeMillis() - StartTimeMillis < 3500 ) CountText = "START";
-					else countdown_flg = false;
+					else{
+						countdown_flg = false;
+						FightTimeMillis = System.currentTimeMillis();
+					}
 					canvas.drawText(CountText, center_x - paint.measureText(CountText) / 2 , center_y - ((paint.descent() + paint.ascent()) / 2), paint);
-					Log.w( "AAAAAtt", "center_x" + center_x);
-					Log.w( "AAAAAtt", "center_y" + center_y);
-					Log.w( "AAAAAtt", "paint.descent()" + paint.descent());
-					Log.w( "AAAAAtt", "paint.ascent()" + paint.ascent());
-					Log.w( "AAAAAtt", "paint.ascent()" + paint.measureText(CountText));
-
-
 				}
 
 				// 描画
