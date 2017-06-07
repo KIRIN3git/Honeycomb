@@ -14,7 +14,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 import static java.lang.Math.round;
 import static java.lang.Math.sqrt;
-
+import com.example.shinji.honeycomb.PlayerMng;
 /**
  * Created by shinji on 2017/04/06.
  */
@@ -29,8 +29,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int HEX_NUM_COL = 16;
 
 	// プライヤーオブジェクト
-	PlayerStatus player1 = new PlayerStatus( 0,-100,1 );
-	PlayerStatus player2 = new PlayerStatus( 0,100,2 );
+//	PlayerStatus player1 = new PlayerStatus( 0,-100,1 );
+//	PlayerStatus player2 = new PlayerStatus( 0,100,2 );
 
 	// スクリーンの大きさ(px)
 	int screen_width, screen_height;
@@ -138,6 +138,9 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	public BaseSurfaceView(Context context){
 		super(context);
 
+		// プレイヤー情報の柵瀬い
+		PlayerMng.createUser();
+
 		// 端末に合わせた各サイズの調整
 		if( MainActivity.real.x >= 1080 ) {
 			// 六角形の半径の長さ
@@ -218,8 +221,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		while(thread != null){
 			try{
 
-//				Log.w( "IIIIIIIIIIIIIIIIIII", "player1.touch_flg[" + player1.touch_flg + "]");
-//				Log.w( "IIIIIIIIIIIIIIIIIII", "player2.touch_flg[" + player2.touch_flg + "]");
 
 				if(!countdown_flg) run_start_time = System.currentTimeMillis();
 
@@ -232,13 +233,16 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 				// タップ移動比率xyと指示マーカーのxyを取得
 				if(!countdown_flg) GetMoveXY();
+//				if(!countdown_flg) PlayerMng.SetPlayerPosition();
 
-				// 基本六角形
+					// 基本六角形
 				DrawHex(paint, canvas);
 
 				// 中心円の表示
-				DrawPlayer(paint, canvas, 1);
-				DrawPlayer(paint, canvas, 2);
+				//			DrawPlayer(paint, canvas, 1);
+				//			DrawPlayer(paint, canvas, 2);
+
+				PlayerMng.DrawPlayer(paint, canvas);
 
 				if(!countdown_flg){
 					// 指示器の表示
@@ -287,17 +291,18 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	}
 
 	public void GetMoveXY(){
-		if( player1.touch_flg ){
+		
+		if( PlayerMng.players.get(0).touch_flg ){
 			// タップ移動比率xyと指示マーカーのxyを取得
-			getIndicatorXY(player1.start_touch_x, player1.start_touch_y, player1.now_touch_x, player1.now_touch_y, player1.indicatorDiff, player1.indicatorXY);
-			player1.now_position_x = player1.now_position_x - (player1.indicatorDiff[0] / PLAYER_SPEED);
-			player1.now_position_y = player1.now_position_y - (player1.indicatorDiff[1] / PLAYER_SPEED);
+			getIndicatorXY(PlayerMng.players.get(0).start_touch_x, PlayerMng.players.get(0).start_touch_y, PlayerMng.players.get(0).now_touch_x, PlayerMng.players.get(0).now_touch_y, PlayerMng.players.get(0).indicatorDiff, PlayerMng.players.get(0).indicatorXY);
+			PlayerMng.players.get(0).now_position_x = PlayerMng.players.get(0).now_position_x - (PlayerMng.players.get(0).indicatorDiff[0] / PLAYER_SPEED);
+			PlayerMng.players.get(0).now_position_y = PlayerMng.players.get(0).now_position_y - (PlayerMng.players.get(0).indicatorDiff[1] / PLAYER_SPEED);
 		}
-		if( player2.touch_flg ){
+		if( PlayerMng.players.get(1).touch_flg ){
 			// タップ移動比率xyと指示マーカーのxyを取得
-			getIndicatorXY(player2.start_touch_x, player2.start_touch_y, player2.now_touch_x, player2.now_touch_y, player2.indicatorDiff, player2.indicatorXY);
-			player2.now_position_x = player2.now_position_x - (player2.indicatorDiff[0] / PLAYER_SPEED);
-			player2.now_position_y = player2.now_position_y - (player2.indicatorDiff[1] / PLAYER_SPEED);
+			getIndicatorXY(PlayerMng.players.get(1).start_touch_x, PlayerMng.players.get(1).start_touch_y, PlayerMng.players.get(1).now_touch_x, PlayerMng.players.get(1).now_touch_y, PlayerMng.players.get(1).indicatorDiff, PlayerMng.players.get(1).indicatorXY);
+			PlayerMng.players.get(1).now_position_x = PlayerMng.players.get(1).now_position_x - (PlayerMng.players.get(1).indicatorDiff[0] / PLAYER_SPEED);
+			PlayerMng.players.get(1).now_position_y = PlayerMng.players.get(1).now_position_y - (PlayerMng.players.get(1).indicatorDiff[1] / PLAYER_SPEED);
 		}
 
 	}
@@ -323,11 +328,11 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 				// すでにペイント済み、枠内に中心点が入ったら
 				// 一旦、円で計算
-				if( ((add_x + player1.now_position_x) * (add_x + player1.now_position_x) + (add_y + player1.now_position_y) * (add_y + player1.now_position_y)) < Math.pow(HEX_LENGTH,2) ){
+				if( ((add_x + PlayerMng.players.get(0).now_position_x) * (add_x + PlayerMng.players.get(0).now_position_x) + (add_y + PlayerMng.players.get(0).now_position_y) * (add_y + PlayerMng.players.get(0).now_position_y)) < Math.pow(HEX_LENGTH,2) ){
 					// 壁にぶつかったら
 					if( hex_color_num[col_i][row_i] == 3 ){
-						player1.now_position_x = 0;
-						player1.now_position_y = 0;
+						PlayerMng.players.get(0).now_position_x = 0;
+						PlayerMng.players.get(0).now_position_y = 0;
 
 					}
 					// 新規塗りだったら
@@ -336,15 +341,15 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 						hex_color_num[col_i][row_i] = PLAYER_NO;
 						// 囲まれていたら色を塗る
 //								CheckCloseAndFill(i,j,canvas);
-						player1.before_fill_i = col_i;
-						player1.before_fill_j = row_i;
+						PlayerMng.players.get(0).before_fill_i = col_i;
+						PlayerMng.players.get(0).before_fill_j = row_i;
 					}
 				}
-				if( ((add_x + player2.now_position_x) * (add_x + player2.now_position_x) + (add_y + player2.now_position_y) * (add_y + player2.now_position_y)) < Math.pow(HEX_LENGTH,2) ){
+				if( ((add_x + PlayerMng.players.get(1).now_position_x) * (add_x + PlayerMng.players.get(1).now_position_x) + (add_y + PlayerMng.players.get(1).now_position_y) * (add_y + PlayerMng.players.get(1).now_position_y)) < Math.pow(HEX_LENGTH,2) ){
 					// 壁にぶつかったら
 					if( hex_color_num[col_i][row_i] == 3 ){
-						player2.now_position_x = 0;
-						player2.now_position_y = 0;
+						PlayerMng.players.get(1).now_position_x = 0;
+						PlayerMng.players.get(1).now_position_y = 0;
 
 					}
 					// 新規塗りだったら
@@ -353,8 +358,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 						hex_color_num[col_i][row_i] = 2;
 						// 囲まれていたら色を塗る
 //								CheckCloseAndFill(i,j,canvas);
-						player2.before_fill_i = col_i;
-						player2.before_fill_j = row_i;
+						PlayerMng.players.get(1).before_fill_i = col_i;
+						PlayerMng.players.get(1).before_fill_j = row_i;
 					}
 				}
 
@@ -383,31 +388,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	}
 
 
-	public void DrawPlayer(Paint paint,Canvas canvas,int player_no){
-		float p1_start_x,p1_start_y,p2_start_x,p2_start_y;
-
-		paint.reset();
-		paint.setAntiAlias(true);
-		paint.setStyle(Paint.Style.FILL_AND_STROKE);
-
-		if( player_no == 1 ){
-			p1_start_x = center_x;
-			p1_start_y = center_y;
-			paint.setColor(Color.argb(255, player1.r, player1.g, player1.b));
-			// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
-			canvas.drawCircle(p1_start_x - player1.now_position_x, p1_start_y - player1.now_position_y, PLAYER_RADIUS, paint);
-		}
-		else if( player_no == 2 ){
-			p2_start_x = center_x;
-			p2_start_y = center_y;
-			paint.setColor(Color.argb(255, player2.r, player2.g, player2.b));
-			// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
-			canvas.drawCircle(p2_start_x - player2.now_position_x, p2_start_y - player2.now_position_y, PLAYER_RADIUS, paint);
-		}
-		else return;
-
-
-	}
 
 	public void DrawIndicator(Paint paint,Canvas canvas,int player_no){
 
@@ -415,16 +395,16 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		int indicatorXY[] = {0,0};
 
 		if(player_no == 1){
-			if(!player1.touch_flg) return;
-			start_touch_x = player1.start_touch_x;
-			start_touch_y = player1.start_touch_y;
-			indicatorXY = player1.indicatorXY;
+			if(!PlayerMng.players.get(0).touch_flg) return;
+			start_touch_x = PlayerMng.players.get(0).start_touch_x;
+			start_touch_y = PlayerMng.players.get(0).start_touch_y;
+			indicatorXY = PlayerMng.players.get(0).indicatorXY;
 		}
 		else if(player_no == 2){
-			if(!player2.touch_flg) return;
-			start_touch_x = player2.start_touch_x;
-			start_touch_y = player2.start_touch_y;
-			indicatorXY = player2.indicatorXY;
+			if(!PlayerMng.players.get(1).touch_flg) return;
+			start_touch_x = PlayerMng.players.get(1).start_touch_x;
+			start_touch_y = PlayerMng.players.get(1).start_touch_y;
+			indicatorXY = PlayerMng.players.get(1).indicatorXY;
 		}
 		else return;
 
@@ -454,10 +434,10 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		if( indicatorXY[0] != 0 && indicatorXY[1] != 0){
 			canvas.drawCircle(indicatorXY[0], indicatorXY[1], DIRECTION_RADIUS, paint);
 		}
-		//Log.w( "DEBUG_DATA", "CENTER player1.start_touch_x " + player1.start_touch_x );
-		//Log.w( "DEBUG_DATA", "CENTER player1.start_touch_y " + player1.start_touch_y );
-		//Log.w( "DEBUG_DATA", "CENTER direXY[0] " + player1.indicatorXY[0] );
-		//Log.w( "DEBUG_DATA", "CENTER direXY[1] " + player1.indicatorXY[1] );
+		//Log.w( "DEBUG_DATA", "CENTER PlayerMng.players.get(0).start_touch_x " + PlayerMng.players.get(0).start_touch_x );
+		//Log.w( "DEBUG_DATA", "CENTER PlayerMng.players.get(0).start_touch_y " + PlayerMng.players.get(0).start_touch_y );
+		//Log.w( "DEBUG_DATA", "CENTER direXY[0] " + PlayerMng.players.get(0).indicatorXY[0] );
+		//Log.w( "DEBUG_DATA", "CENTER direXY[1] " + PlayerMng.players.get(0).indicatorXY[1] );
 
 	}
 	public void CheckCloseAndFill(int i,int j,Canvas canvas){
@@ -466,17 +446,17 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		boolean kakujituni_close_flg = false;
 
 		// 前の塗りつぶしがなければエラー
-		if( player1.before_fill_i == -1 || player1.before_fill_j == -1 ) return;
+		if( PlayerMng.players.get(0).before_fill_i == -1 || PlayerMng.players.get(0).before_fill_j == -1 ) return;
 
 		Log.w( "CheckCloseAndFill", "i " + i );
 		Log.w( "CheckCloseAndFill", "j " + j );
-		Log.w( "CheckCloseAndFill", "player1.before_fill_i " + player1.before_fill_i);
-		Log.w( "CheckCloseAndFill", "player1.before_fill_j " + player1.before_fill_j);
+		Log.w( "CheckCloseAndFill", "PlayerMng.players.get(0).before_fill_i " + PlayerMng.players.get(0).before_fill_i);
+		Log.w( "CheckCloseAndFill", "PlayerMng.players.get(0).before_fill_j " + PlayerMng.players.get(0).before_fill_j);
 
 		// PLAYARが上端じゃなくて、上のマスがBEFOREじゃなく埋まっていたら、閉じた可能性あり
 		if( i != 0 ){
 			Log.w( "CheckCloseAndFill", "hex_color_num[i-1][j] " + hex_color_num[i-1][j] );
-			if( hex_color_num[i-1][j] == 1 && !( i-1 == player1.before_fill_i && j == player1.before_fill_j) ){
+			if( hex_color_num[i-1][j] == 1 && !( i-1 == PlayerMng.players.get(0).before_fill_i && j == PlayerMng.players.get(0).before_fill_j) ){
 				tabun_close_flg = true;
 
 				Log.w( "CheckCloseAndFill", "TRUEEEEEEEEEE1"  );
@@ -485,7 +465,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		}
 		if( j != 0 ){
 			Log.w( "CheckCloseAndFill", "hex_color_num[i][j-1] " + hex_color_num[i][j-1] );
-			if( hex_color_num[i][j-1] == 1 && !( i == player1.before_fill_i && j-1 == player1.before_fill_j) ){
+			if( hex_color_num[i][j-1] == 1 && !( i == PlayerMng.players.get(0).before_fill_i && j-1 == PlayerMng.players.get(0).before_fill_j) ){
 				tabun_close_flg = true;
 
 				Log.w( "CheckCloseAndFill", "TRUEEEEEEEEEE2"  );
@@ -494,7 +474,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		}
 		if( i != SQUARE_NUM - 1 ){
 			Log.w( "CheckCloseAndFill", "hex_color_num[i+1][j] " + hex_color_num[i+1][j] );
-			if( hex_color_num[i+1][j] == 1 && !( i+1 == player1.before_fill_i && j == player1.before_fill_j) ){
+			if( hex_color_num[i+1][j] == 1 && !( i+1 == PlayerMng.players.get(0).before_fill_i && j == PlayerMng.players.get(0).before_fill_j) ){
 				tabun_close_flg = true;
 
 				Log.w( "CheckCloseAndFill", "TRUEEEEEEEEEE3"  );
@@ -503,7 +483,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		}
 		if( j != SQUARE_NUM - 1 ){
 			Log.w( "CheckCloseAndFill", "hex_color_num[i][j+1] " + hex_color_num[i][j+1] );
-			if( hex_color_num[i][j+1] == 1 && !( i == player1.before_fill_i && j+1 == player1.before_fill_j) ){
+			if( hex_color_num[i][j+1] == 1 && !( i == PlayerMng.players.get(0).before_fill_i && j+1 == PlayerMng.players.get(0).before_fill_j) ){
 				tabun_close_flg = true;
 
 				Log.w( "CheckCloseAndFill", "TRUEEEEEEEEEE4"  );
@@ -632,12 +612,12 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 						paint.setStrokeWidth(8);
 						Log.w( "FillClose", "aaaaaaaaaaaaaaaaaa2");
 						paint.setStyle(Paint.Style.FILL);
-						Log.w( "FillClose", "aaaaaaaaaaaaaaaaaa3 center_x - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * i) + player1.now_position_x " + (center_x - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * i) + player1.now_position_x);
+						Log.w( "FillClose", "aaaaaaaaaaaaaaaaaa3 center_x - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * i) + PlayerMng.players.get(0).now_position_x " + (center_x - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * i) + PlayerMng.players.get(0).now_position_x);
 						canvas.drawRect(
-								( center_x - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + player1.now_position_x,
-								( center_y - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + player1.now_position_y,
-								( center_x + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + player1.now_position_x,
-								( center_y + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + player1.now_position_y,
+								( center_x - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + PlayerMng.players.get(0).now_position_x,
+								( center_y - (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + PlayerMng.players.get(0).now_position_y,
+								( center_x + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( i - ( SQUARE_NUM / 2 ) ) ) + PlayerMng.players.get(0).now_position_x,
+								( center_y + (SQUARE_LENGTH / 2) ) + (SQUARE_LENGTH * ( j - ( SQUARE_NUM / 2 ) ) ) + PlayerMng.players.get(0).now_position_y,
 								paint);
 
 						// 色を記録
@@ -676,23 +656,23 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 			y = event.getY(data_id);
 
 			if (data_id == -1) continue;
-			Log.w( "AAAAAxx1zzz", "player1.now_touch_x " + player1.now_touch_x);
-			Log.w( "AAAAAxx1zzz", "player1.start_touch_x " + player1.start_touch_x);
-			Log.w( "AAAAAxx1", "player1.data_id " + player1.data_id);
+			Log.w( "AAAAAxx1zzz", "PlayerMng.players.get(0).now_touch_x " + PlayerMng.players.get(0).now_touch_x);
+			Log.w( "AAAAAxx1zzz", "PlayerMng.players.get(0).start_touch_x " + PlayerMng.players.get(0).start_touch_x);
+			Log.w( "AAAAAxx1", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id);
 			Log.w( "AAAAAxx1", "MainActivity.real.y " + MainActivity.real.y);
 			Log.w( "AAAAAxx1", "y " + y);
 
 			// Player1の情報
-			if(data_id == player1.data_id){
+			if(data_id == PlayerMng.players.get(0).data_id){
 				// タッチしている位置取得
-				player1.now_touch_x = (int)x;
-				player1.now_touch_y = (int)y;
+				PlayerMng.players.get(0).now_touch_x = (int)x;
+				PlayerMng.players.get(0).now_touch_y = (int)y;
 			}
 			// 画面上半分の位置をタップ
-			else if(data_id == player2.data_id){
+			else if(data_id == PlayerMng.players.get(1).data_id){
 				// タッチしている位置取得
-				player2.now_touch_x = (int)x;
-				player2.now_touch_y = (int)y;
+				PlayerMng.players.get(1).now_touch_x = (int)x;
+				PlayerMng.players.get(1).now_touch_y = (int)y;
 			}
 			Log.i("tag2", "DataIndex[" + data_id + "] PointIndex[" + pointId + "] x[" + x + "]");
 			Log.i("tag2", "DataIndex[" + data_id + "] PointIndex[" + pointId + "] y[" + y + "]");
@@ -705,112 +685,112 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		switch(action & MotionEvent.ACTION_MASK) {
 			case MotionEvent.ACTION_DOWN:
 				Log.w( "aaaAAAAAxx21 DOWN", "data_id " + data_id );
-				Log.w( "aaaAAAAAxx21 DOWN", "player1.data_id " + player1.data_id );
-				Log.w( "aaaAAAAAxx21 DOWN", "player2.data_id " + player2.data_id );
+				Log.w( "aaaAAAAAxx21 DOWN", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
+				Log.w( "aaaAAAAAxx21 DOWN", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
 
-				if(MainActivity.real.y / 2 < y && player1.data_id == -1){
-					player1.start_touch_x = (int)x;
-					player1.start_touch_y = (int)y;
-					player1.now_touch_x = (int)x;
-					player1.now_touch_y = (int)y;
-					player1.touch_flg = true;
-					player1.data_id = data_id;
+				if(MainActivity.real.y / 2 < y && PlayerMng.players.get(0).data_id == -1){
+					PlayerMng.players.get(0).start_touch_x = (int)x;
+					PlayerMng.players.get(0).start_touch_y = (int)y;
+					PlayerMng.players.get(0).now_touch_x = (int)x;
+					PlayerMng.players.get(0).now_touch_y = (int)y;
+					PlayerMng.players.get(0).touch_flg = true;
+					PlayerMng.players.get(0).data_id = data_id;
 				}
-				else if(MainActivity.real.y / 2 > y && player2.data_id == -1){
-					player2.start_touch_x = (int)x;
-					player2.start_touch_y = (int)y;
-					player2.now_touch_x = (int)x;
-					player2.now_touch_y = (int)y;
-					player2.touch_flg = true;
-					player2.data_id = data_id;
+				else if(MainActivity.real.y / 2 > y && PlayerMng.players.get(1).data_id == -1){
+					PlayerMng.players.get(1).start_touch_x = (int)x;
+					PlayerMng.players.get(1).start_touch_y = (int)y;
+					PlayerMng.players.get(1).now_touch_x = (int)x;
+					PlayerMng.players.get(1).now_touch_y = (int)y;
+					PlayerMng.players.get(1).touch_flg = true;
+					PlayerMng.players.get(1).data_id = data_id;
 				}
 
 				Log.i("tag1", "Touch Down" + " count=" + count + ", DataIndex=" + data_id);
 				break;
 			case MotionEvent.ACTION_POINTER_DOWN:
 				Log.w( "aaaAAAAAxx21 DOWN2", "data_id " + data_id );
-				Log.w( "aaaAAAAAxx21 DOWN2", "player1.data_id " + player1.data_id );
-				Log.w( "aaaAAAAAxx21 DOWN2", "player2.data_id " + player2.data_id );
+				Log.w( "aaaAAAAAxx21 DOWN2", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
+				Log.w( "aaaAAAAAxx21 DOWN2", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
 
-				if(MainActivity.real.y / 2 < y && player1.data_id == -1){
+				if(MainActivity.real.y / 2 < y && PlayerMng.players.get(0).data_id == -1){
 					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
-					player1.start_touch_x = (int)x;
-					player1.start_touch_y = (int)y;
-					player1.now_touch_x = (int)x;
-					player1.now_touch_y = (int)y;
-					player1.touch_flg = true;
-					player1.data_id = data_id;
+					PlayerMng.players.get(0).start_touch_x = (int)x;
+					PlayerMng.players.get(0).start_touch_y = (int)y;
+					PlayerMng.players.get(0).now_touch_x = (int)x;
+					PlayerMng.players.get(0).now_touch_y = (int)y;
+					PlayerMng.players.get(0).touch_flg = true;
+					PlayerMng.players.get(0).data_id = data_id;
 				}
-				else if(MainActivity.real.y / 2 > y && player2.data_id == -1){
+				else if(MainActivity.real.y / 2 > y && PlayerMng.players.get(1).data_id == -1){
 					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa2 ");
-					player2.start_touch_x = (int)x;
-					player2.start_touch_y = (int)y;
-					player2.now_touch_x = (int)x;
-					player2.now_touch_y = (int)y;
-					player2.touch_flg = true;
-					player2.data_id = data_id;
+					PlayerMng.players.get(1).start_touch_x = (int)x;
+					PlayerMng.players.get(1).start_touch_y = (int)y;
+					PlayerMng.players.get(1).now_touch_x = (int)x;
+					PlayerMng.players.get(1).now_touch_y = (int)y;
+					PlayerMng.players.get(1).touch_flg = true;
+					PlayerMng.players.get(1).data_id = data_id;
 				}
 
 				Log.i("tag1", "Touch PTR Down" + " count=" + count + ", DataIndex=" + data_id);
 				break;
 			case MotionEvent.ACTION_UP:
 				Log.w( "aaaAAAAAxx21 UP", "data_id " + data_id );
-				Log.w( "aaaAAAAAxx21 UP", "player1.data_id " + player1.data_id );
-				Log.w( "aaaAAAAAxx21 UP", "player2.data_id " + player2.data_id );
+				Log.w( "aaaAAAAAxx21 UP", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
+				Log.w( "aaaAAAAAxx21 UP", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
 
-				if(player1.data_id == data_id){
+				if(PlayerMng.players.get(0).data_id == data_id){
 					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
-					player1.touch_flg = false;
-					player1.data_id = -1;
-					player1.indicatorXY[0] = 0;
-					player1.indicatorXY[1] = 0;
+					PlayerMng.players.get(0).touch_flg = false;
+					PlayerMng.players.get(0).data_id = -1;
+					PlayerMng.players.get(0).indicatorXY[0] = 0;
+					PlayerMng.players.get(0).indicatorXY[1] = 0;
 					// 0番がなくなるとデータID1番は0番に変更になる
-					if(player2.data_id == 1) player2.data_id = 0;
+					if(PlayerMng.players.get(1).data_id == 1) PlayerMng.players.get(1).data_id = 0;
 				}
-				else if(player2.data_id == data_id){
+				else if(PlayerMng.players.get(1).data_id == data_id){
 					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa2 ");
-					player2.touch_flg = false;
-					player2.data_id = -1;
-					player2.indicatorXY[0] = 0;
-					player2.indicatorXY[1] = 0;
+					PlayerMng.players.get(1).touch_flg = false;
+					PlayerMng.players.get(1).data_id = -1;
+					PlayerMng.players.get(1).indicatorXY[0] = 0;
+					PlayerMng.players.get(1).indicatorXY[1] = 0;
 					// 0番がなくなるとデータID1番は0番に変更になる
-					if(player1.data_id == 1) player1.data_id = 0;
+					if(PlayerMng.players.get(0).data_id == 1) PlayerMng.players.get(0).data_id = 0;
 				}
 
 				Log.i("tag1", "Touch Up" + " count=" + count + ", DataIndex=" + data_id);
 				break;
 			case MotionEvent.ACTION_POINTER_UP:
 				Log.w( "aaaAAAAAxx21 UP2", "data_id " + data_id );
-				Log.w( "aaaAAAAAxx21 UP2", "player1.data_id " + player1.data_id );
-				Log.w( "aaaAAAAAxx21 UP2", "player2.data_id " + player2.data_id );
+				Log.w( "aaaAAAAAxx21 UP2", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
+				Log.w( "aaaAAAAAxx21 UP2", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
 
-				if(player1.data_id == data_id){
+				if(PlayerMng.players.get(0).data_id == data_id){
 					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
-					player1.touch_flg = false;
-					player1.data_id = -1;
-					player1.indicatorXY[0] = 0;
-					player1.indicatorXY[1] = 0;
+					PlayerMng.players.get(0).touch_flg = false;
+					PlayerMng.players.get(0).data_id = -1;
+					PlayerMng.players.get(0).indicatorXY[0] = 0;
+					PlayerMng.players.get(0).indicatorXY[1] = 0;
 					// 0番がなくなるとデータID1番は0番に変更になる
-					if(player2.data_id == 1) player2.data_id = 0;
+					if(PlayerMng.players.get(1).data_id == 1) PlayerMng.players.get(1).data_id = 0;
 				}
-				else if(player2.data_id == data_id){
+				else if(PlayerMng.players.get(1).data_id == data_id){
 					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa2 ");
-					player2.touch_flg = false;
-					player2.data_id = -1;
-					player2.indicatorXY[0] = 0;
-					player2.indicatorXY[1] = 0;
+					PlayerMng.players.get(1).touch_flg = false;
+					PlayerMng.players.get(1).data_id = -1;
+					PlayerMng.players.get(1).indicatorXY[0] = 0;
+					PlayerMng.players.get(1).indicatorXY[1] = 0;
 					// 0番がなくなるとデータID1番は0番に変更になる
-					if(player1.data_id == 1) player1.data_id = 0;
+					if(PlayerMng.players.get(0).data_id == 1) PlayerMng.players.get(0).data_id = 0;
 				}
 
 				Log.i("tag1", "Touch PTR Up" + " count=" + count + ", DataIndex=" + data_id);
 				break;
 		}
 
-		//	Log.w( "DEBUG_DATA", "tauch x " + player1.now_touch_x );
-		//	Log.w( "DEBUG_DATA", "tauch y " + player1.now_touch_y );
-		//player1.now_position_x += 3;
-		//player1.now_position_y += 3;
+		//	Log.w( "DEBUG_DATA", "tauch x " + PlayerMng.players.get(0).now_touch_x );
+		//	Log.w( "DEBUG_DATA", "tauch y " + PlayerMng.players.get(0).now_touch_y );
+		//PlayerMng.players.get(0).now_position_x += 3;
+		//PlayerMng.players.get(0).now_position_y += 3;
 		// 再描画の指示
 		invalidate();
 
@@ -856,10 +836,10 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		sa_x = abs(start_touch_x - now_touch_x);
 		sa_y = abs(start_touch_y - now_touch_y);
 
-		//Log.w( "DEBUG_DATA", "player1.start_touch_x " + player1.start_touch_x  );
-		//Log.w( "DEBUG_DATA", "player1.start_touch_y " + player1.start_touch_y  );
-		//Log.w( "DEBUG_DATA", "player1.now_touch_x " + player1.now_touch_x  );
-		//Log.w( "DEBUG_DATA", "player1.now_touch_y " + player1.now_touch_y  );
+		//Log.w( "DEBUG_DATA", "PlayerMng.players.get(0).start_touch_x " + PlayerMng.players.get(0).start_touch_x  );
+		//Log.w( "DEBUG_DATA", "PlayerMng.players.get(0).start_touch_y " + PlayerMng.players.get(0).start_touch_y  );
+		//Log.w( "DEBUG_DATA", "PlayerMng.players.get(0).now_touch_x " + PlayerMng.players.get(0).now_touch_x  );
+		//Log.w( "DEBUG_DATA", "PlayerMng.players.get(0).now_touch_y " + PlayerMng.players.get(0).now_touch_y  );
 
 		//Log.w( "DEBUG_DATA", "sa_x " + sa_x  );
 		//Log.w( "DEBUG_DATA", "sa_y " + sa_y  );
@@ -885,10 +865,10 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		//Log.w( "DEBUG_DATA", "(int)round(sa_x * ratio) " + (int)round(sa_x * ratio)  );
 		//Log.w( "DEBUG_DATA", "(int)round(sa_y * ratio) " + (int)round(sa_y * ratio)  );
 
-		//Log.w( "DEBUG_DATA", "player1.indicatorXY[0] " + player1.indicatorXY[0]  );
-		//Log.w( "DEBUG_DATA", "player1.indicatorXY[1] " + player1.indicatorXY[1]  );
+		//Log.w( "DEBUG_DATA", "PlayerMng.players.get(0).indicatorXY[0] " + PlayerMng.players.get(0).indicatorXY[0]  );
+		//Log.w( "DEBUG_DATA", "PlayerMng.players.get(0).indicatorXY[1] " + PlayerMng.players.get(0).indicatorXY[1]  );
 
-		//Log.w( "DEBUG_DATA", "結果 " + ( pow(player1.indicatorXY[0],2) + pow(player1.indicatorXY[1],2) )  );
+		//Log.w( "DEBUG_DATA", "結果 " + ( pow(PlayerMng.players.get(0).indicatorXY[0],2) + pow(PlayerMng.players.get(0).indicatorXY[1],2) )  );
 
 	}
 

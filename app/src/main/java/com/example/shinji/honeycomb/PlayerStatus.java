@@ -24,7 +24,7 @@ public class PlayerStatus{
 	int before_fill_i,before_fill_j;
 	// 指示器のXY位置
 	int indicatorXY[] = {0,0};
-	// セーブ位置と指示器の差分
+	// 開始位置と指示器の差分
 	int indicatorDiff[] = {0,0};
 
 	PlayerStatus( int x,int y,int color_no ){
