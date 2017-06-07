@@ -99,10 +99,10 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 	int hex_color_num[][] = {
 			{3,3,3,3,3,3,3,3,3,3,3,3,3,3,3},
-			{3,3,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,3,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,3,0,0,0,0,0,0,0,0,0,0,0,0,3},
-			{3,3,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
+			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
 			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
 			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
 			{3,0,0,0,0,0,0,0,0,0,0,0,0,0,3},
@@ -169,6 +169,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int PLAYER_SPEED = 10;
 //	final static int PLAYER_SPEED = 5;
 
+	// カウントダウンテキストサイズ
+	static int COUNTDONW_TEXT_SIZE;
 
 	final static int SQUARE_LENGTH = 100;
 
@@ -197,6 +199,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 			DIRECTION_RADIUS = 80;
 			// プレイヤーの半径
 			PLAYER_RADIUS = 40;
+			// カウントダウンテキストサイズ
+			COUNTDONW_TEXT_SIZE = 200;
 		}
 		else if( MainActivity.real.x >= 720 ){
 			// 六角形の半径の長さ
@@ -209,6 +213,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 			DIRECTION_RADIUS = 40;
 			// プレイヤーの半径
 			PLAYER_RADIUS = 20;
+			// カウントダウンテキストサイズ
+			COUNTDONW_TEXT_SIZE = 100;
 		}
 		else{
 			// 六角形の半径の長さ
@@ -270,8 +276,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				canvas.drawRect( 0, 0, screen_width, screen_height, bgPaint);
 
 				// Canvas 中心点
-				center_x = canvas.getWidth()/2;
-				center_y = canvas.getHeight()/2;
+				center_x = canvas.getWidth() / 2;
+				center_y = canvas.getHeight() / 2;
 
 				// タップ移動比率xyと指示マーカーのxyを取得
 				if(!countdown_flg) GetMoveXY();
@@ -291,12 +297,14 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					long ss = ( TimeLimitMillis - (System.currentTimeMillis() - FightTimeMillis) ) / 1000;
 					long ms = ( TimeLimitMillis - (System.currentTimeMillis() - FightTimeMillis) ) - ss * 1000;
 
+					paint.reset();
 					paint.setTextSize(200);
 					paint.setColor(Color.RED);
-					canvas.drawText(String.format("%02d.%02d", ss, ms), center_x - paint.measureText(CountText) / 2 , center_y - ((paint.descent() + paint.ascent()) / 2), paint);
+					canvas.drawText(String.format("%02d.%02d", ss, ms), 0, canvas.getHeight(), paint);
 				}
 				else{
 					// カウントダウン
+					paint.reset();
 					paint.setTextSize(200);
 					paint.setColor(Color.RED);
 					if( System.currentTimeMillis() - StartTimeMillis < 1000 ) CountText = "3";
@@ -348,6 +356,9 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		// パスを設定
 		Path path = new Path();
 
+		paint.reset();
+		paint.setStrokeWidth(HEX_WIDHT);
+		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 		for( int col_i = 0; col_i < HEX_NUM_COL; col_i++ ){
 			for( int row_i = 0; row_i < HEX_NUM_ROW; row_i++ ){
 
@@ -398,9 +409,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 
 				// 六角形の描画
+
 				paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[col_i][row_i]][0], hex_color_rgb[hex_color_num[col_i][row_i]][1], hex_color_rgb[hex_color_num[col_i][row_i]][2]));
-				paint.setStrokeWidth(HEX_WIDHT);
-				paint.setStyle(Paint.Style.FILL_AND_STROKE);
 				path.reset();
 				// 右
 				path.moveTo(center_x + HEX_LENGTH - HEX_WIDHT + add_x, center_y + add_y);
@@ -425,6 +435,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	public void DrawPlayer(Paint paint,Canvas canvas,int player_no){
 		float p1_start_x,p1_start_y,p2_start_x,p2_start_y;
 
+		paint.reset();
 		paint.setAntiAlias(true);
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 
@@ -468,6 +479,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		else return;
 
 		// セーブタップ位置に〇を表示
+		paint.reset();
 		paint.setColor(Color.argb(120, 188, 200, 219)); // 水浅葱
 		paint.setStrokeWidth(20);
 		paint.setStyle(Paint.Style.STROKE);
@@ -475,6 +487,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		canvas.drawCircle(save_touch_x, save_touch_y, DIRECTION_RADIUS, paint);
 
 		// セーブタップ位置を中心にタップ〇移動範囲を表示
+		paint.reset();
 		paint.setColor(Color.argb(120, 188, 200, 219)); // 水浅葱
 		paint.setStrokeWidth(20);
 		paint.setStyle(Paint.Style.STROKE);
@@ -482,6 +495,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		canvas.drawCircle(save_touch_x, save_touch_y, DIRECTION_RADIUS * 3, paint);
 
 		// 移動方向に〇を表示
+		paint.reset();
 		paint.setColor(Color.argb(120, 235, 121, 136)); // ピンク
 		paint.setStrokeWidth(20);
 		paint.setStyle(Paint.Style.STROKE);
