@@ -11,10 +11,8 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import static java.lang.Math.abs;
-import static java.lang.Math.pow;
 import static java.lang.Math.round;
-import static java.lang.Math.sqrt;
-import com.example.shinji.honeycomb.PlayerMng;
+
 /**
  * Created by shinji on 2017/04/06.
  */
@@ -115,15 +113,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 
 
-	// プレイヤーの半径
-	static int PLAYER_RADIUS;
 
-	// プレイヤーのスピード
-	final static int PLAYER_SPEED = 10;
-//	final static int PLAYER_SPEED = 5;
-
-	// カウントダウンテキストサイズ
-	static int COUNTDONW_TEXT_SIZE;
 
 	final static int SQUARE_LENGTH = 100;
 
@@ -141,7 +131,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		super(context);
 
 		// プレイヤー情報の柵瀬い
-		PlayerMng.createUser();
+		PlayerMng.playerInit();
 
 		// 端末に合わせた各サイズの調整
 		if( MainActivity.real.x >= 1080 ) {
@@ -151,8 +141,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 			HEX_WIDHT = 5.0f;
 			// 六角形の一辺の長さの比率
 			HEX_RATIO = 0.86f;
-			// カウントダウンテキストサイズ
-			COUNTDONW_TEXT_SIZE = 200;
 		}
 		else if( MainActivity.real.x >= 720 ){
 			// 六角形の半径の長さ
@@ -161,8 +149,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 			HEX_WIDHT = 5.0f;
 			// 六角形の一辺の長さの比率
 			HEX_RATIO = 0.86f;
-			// カウントダウンテキストサイズ
-			COUNTDONW_TEXT_SIZE = 100;
 		}
 		else{
 			// 六角形の半径の長さ
@@ -195,16 +181,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		Paint bgPaint = new Paint();
 		bgPaint.setColor(Color.argb(255, BACK_R, BACK_G, BACK_B));
 
-		// 起動時間
-		long StartTimeMillis = System.currentTimeMillis();
-		// 戦い始め時間
-		long FightTimeMillis = 0;
-		// 現在時間
-		long CurrentTimeMillis;
-		// 前回時間
-		long BeforeTimeMillis = StartTimeMillis;
 
-		long TimeLimitMillis = 60000;
 
 		String CountText = "";
 
@@ -233,36 +210,16 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				// プレイヤーの表示
 				PlayerMng.DrawPlayer(paint, canvas);
 
-				Log.w( "AAAAAIIIIIIIIIIIIE", "aaa " + PlayerMng.players.get(0).touch_flg );
-				Log.w( "AAAAAIIIIIIIIIIIIE", "aaa " + PlayerMng.players.get(1).touch_flg );
-
-				if(!countdown_flg){
-
+				if(TimeMng.countDownFlg){
+					// 開始カウントダウンの表示
+					TimeMng.drawCountDown(paint, canvas);
+				}
+				// 試合開始
+				else if(TimeMng.fightFlg){
 					// 指示器の表示
 					PlayerMng.DrawIndicator(paint, canvas);
-
-					long ss = ( TimeLimitMillis - (System.currentTimeMillis() - FightTimeMillis) ) / 1000;
-					long ms = ( TimeLimitMillis - (System.currentTimeMillis() - FightTimeMillis) ) - ss * 1000;
-
-					paint.reset();
-					paint.setTextSize(200);
-					paint.setColor(Color.RED);
-					canvas.drawText(String.format("%02d.%02d", ss, ms), 0, canvas.getHeight(), paint);
-				}
-				else{
-					// カウントダウン
-					paint.reset();
-					paint.setTextSize(200);
-					paint.setColor(Color.RED);
-					if( System.currentTimeMillis() - StartTimeMillis < 1000 ) CountText = "3";
-					else if( System.currentTimeMillis() - StartTimeMillis < 2000 ) CountText = "2";
-					else if( System.currentTimeMillis() - StartTimeMillis < 3000 ) CountText = "1";
-					else if( System.currentTimeMillis() - StartTimeMillis < 3500 ) CountText = "START";
-					else{
-						countdown_flg = false;
-						FightTimeMillis = System.currentTimeMillis();
-					}
-					canvas.drawText(CountText, center_x - paint.measureText(CountText) / 2 , center_y - ((paint.descent() + paint.ascent()) / 2), paint);
+					// リミット時間の表示
+					TimeMng.drawLimitTime(paint, canvas);
 				}
 
 				// 描画

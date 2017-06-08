@@ -42,7 +42,7 @@ public class PlayerMng{
 
 
 
-	public static void createUser(){
+	public static void playerInit(){
 
 		// 端末に合わせた各サイズの調整
 		if( MainActivity.real.x >= 1080 ) {
