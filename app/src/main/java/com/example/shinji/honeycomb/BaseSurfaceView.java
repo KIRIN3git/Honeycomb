@@ -46,6 +46,9 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 	final static int PLAYER_NO = 1;
 
+	// 移動マーカーの半径
+	static int DIRECTION_RADIUS = 80;
+
 	// 六角形の塗りつぶし確認
 
 	int hex_color_num[][] = {
@@ -110,8 +113,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	// 六角形の一辺の長さの比率
 	static float HEX_RATIO;
 
-	// 移動マーカーの半径
-	static int DIRECTION_RADIUS;
+
 
 	// プレイヤーの半径
 	static int PLAYER_RADIUS;
@@ -149,10 +151,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 			HEX_WIDHT = 5.0f;
 			// 六角形の一辺の長さの比率
 			HEX_RATIO = 0.86f;
-			// 移動マーカーの半径
-			DIRECTION_RADIUS = 80;
-			// プレイヤーの半径
-			PLAYER_RADIUS = 40;
 			// カウントダウンテキストサイズ
 			COUNTDONW_TEXT_SIZE = 200;
 		}
@@ -163,10 +161,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 			HEX_WIDHT = 5.0f;
 			// 六角形の一辺の長さの比率
 			HEX_RATIO = 0.86f;
-			// 移動マーカーの半径
-			DIRECTION_RADIUS = 40;
-			// プレイヤーの半径
-			PLAYER_RADIUS = 20;
 			// カウントダウンテキストサイズ
 			COUNTDONW_TEXT_SIZE = 100;
 		}
@@ -177,10 +171,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 			HEX_WIDHT = 10.0f;
 			// 六角形の一辺の長さの比率
 			HEX_RATIO = 0.86f;
-			// 移動マーカーの半径
-			DIRECTION_RADIUS = 40;
-			// プレイヤーの半径
-			PLAYER_RADIUS = 20;
 		}
 
 		countdown_flg = true;
@@ -220,8 +210,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 		while(thread != null){
 			try{
-
-
 				if(!countdown_flg) run_start_time = System.currentTimeMillis();
 
 				canvas = surfaceHolder.lockCanvas();
@@ -232,22 +220,26 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				center_y = canvas.getHeight() / 2;
 
 				// タップ移動比率xyと指示マーカーのxyを取得
-				if(!countdown_flg) GetMoveXY();
+				if(!countdown_flg) PlayerMng.GetMoveXY();
 //				if(!countdown_flg) PlayerMng.SetPlayerPosition();
 
-					// 基本六角形
+				// 基本六角形
 				DrawHex(paint, canvas);
 
 				// 中心円の表示
-				//			DrawPlayer(paint, canvas, 1);
-				//			DrawPlayer(paint, canvas, 2);
+				//	DrawPlayer(paint, canvas, 1);
+				//	DrawPlayer(paint, canvas, 2);
 
+				// プレイヤーの表示
 				PlayerMng.DrawPlayer(paint, canvas);
 
+				Log.w( "AAAAAIIIIIIIIIIIIE", "aaa " + PlayerMng.players.get(0).touch_flg );
+				Log.w( "AAAAAIIIIIIIIIIIIE", "aaa " + PlayerMng.players.get(1).touch_flg );
+
 				if(!countdown_flg){
+
 					// 指示器の表示
-					DrawIndicator(paint, canvas, 1);
-					DrawIndicator(paint, canvas, 2);
+					PlayerMng.DrawIndicator(paint, canvas);
 
 					long ss = ( TimeLimitMillis - (System.currentTimeMillis() - FightTimeMillis) ) / 1000;
 					long ms = ( TimeLimitMillis - (System.currentTimeMillis() - FightTimeMillis) ) - ss * 1000;
@@ -285,27 +277,11 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					} catch (InterruptedException e) {
 					}
 				}
-
 			} catch(Exception e){}
 		}
 	}
 
-	public void GetMoveXY(){
-		
-		if( PlayerMng.players.get(0).touch_flg ){
-			// タップ移動比率xyと指示マーカーのxyを取得
-			getIndicatorXY(PlayerMng.players.get(0).start_touch_x, PlayerMng.players.get(0).start_touch_y, PlayerMng.players.get(0).now_touch_x, PlayerMng.players.get(0).now_touch_y, PlayerMng.players.get(0).indicatorDiff, PlayerMng.players.get(0).indicatorXY);
-			PlayerMng.players.get(0).now_position_x = PlayerMng.players.get(0).now_position_x - (PlayerMng.players.get(0).indicatorDiff[0] / PLAYER_SPEED);
-			PlayerMng.players.get(0).now_position_y = PlayerMng.players.get(0).now_position_y - (PlayerMng.players.get(0).indicatorDiff[1] / PLAYER_SPEED);
-		}
-		if( PlayerMng.players.get(1).touch_flg ){
-			// タップ移動比率xyと指示マーカーのxyを取得
-			getIndicatorXY(PlayerMng.players.get(1).start_touch_x, PlayerMng.players.get(1).start_touch_y, PlayerMng.players.get(1).now_touch_x, PlayerMng.players.get(1).now_touch_y, PlayerMng.players.get(1).indicatorDiff, PlayerMng.players.get(1).indicatorXY);
-			PlayerMng.players.get(1).now_position_x = PlayerMng.players.get(1).now_position_x - (PlayerMng.players.get(1).indicatorDiff[0] / PLAYER_SPEED);
-			PlayerMng.players.get(1).now_position_y = PlayerMng.players.get(1).now_position_y - (PlayerMng.players.get(1).indicatorDiff[1] / PLAYER_SPEED);
-		}
 
-	}
 	public void DrawHex(Paint paint,Canvas canvas){
 		float add_x,add_y;
 
@@ -388,58 +364,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	}
 
 
-
-	public void DrawIndicator(Paint paint,Canvas canvas,int player_no){
-
-		int start_touch_x,start_touch_y;
-		int indicatorXY[] = {0,0};
-
-		if(player_no == 1){
-			if(!PlayerMng.players.get(0).touch_flg) return;
-			start_touch_x = PlayerMng.players.get(0).start_touch_x;
-			start_touch_y = PlayerMng.players.get(0).start_touch_y;
-			indicatorXY = PlayerMng.players.get(0).indicatorXY;
-		}
-		else if(player_no == 2){
-			if(!PlayerMng.players.get(1).touch_flg) return;
-			start_touch_x = PlayerMng.players.get(1).start_touch_x;
-			start_touch_y = PlayerMng.players.get(1).start_touch_y;
-			indicatorXY = PlayerMng.players.get(1).indicatorXY;
-		}
-		else return;
-
-		// セーブタップ位置に〇を表示
-		paint.reset();
-		paint.setColor(Color.argb(120, 188, 200, 219)); // 水浅葱
-		paint.setStrokeWidth(20);
-		paint.setStyle(Paint.Style.STROKE);
-		paint.setAntiAlias(true);
-		canvas.drawCircle(start_touch_x, start_touch_y, DIRECTION_RADIUS, paint);
-
-		// セーブタップ位置を中心にタップ〇移動範囲を表示
-		paint.reset();
-		paint.setColor(Color.argb(120, 188, 200, 219)); // 水浅葱
-		paint.setStrokeWidth(20);
-		paint.setStyle(Paint.Style.STROKE);
-		paint.setAntiAlias(true);
-		canvas.drawCircle(start_touch_x, start_touch_y, DIRECTION_RADIUS * 3, paint);
-
-		// 移動方向に〇を表示
-		paint.reset();
-		paint.setColor(Color.argb(120, 235, 121, 136)); // ピンク
-		paint.setStrokeWidth(20);
-		paint.setStyle(Paint.Style.STROKE);
-		paint.setAntiAlias(true);
-		// 計算が完了していたら表示可能
-		if( indicatorXY[0] != 0 && indicatorXY[1] != 0){
-			canvas.drawCircle(indicatorXY[0], indicatorXY[1], DIRECTION_RADIUS, paint);
-		}
-		//Log.w( "DEBUG_DATA", "CENTER PlayerMng.players.get(0).start_touch_x " + PlayerMng.players.get(0).start_touch_x );
-		//Log.w( "DEBUG_DATA", "CENTER PlayerMng.players.get(0).start_touch_y " + PlayerMng.players.get(0).start_touch_y );
-		//Log.w( "DEBUG_DATA", "CENTER direXY[0] " + PlayerMng.players.get(0).indicatorXY[0] );
-		//Log.w( "DEBUG_DATA", "CENTER direXY[1] " + PlayerMng.players.get(0).indicatorXY[1] );
-
-	}
 	public void CheckCloseAndFill(int i,int j,Canvas canvas){
 
 		boolean tabun_close_flg = false;
@@ -688,6 +612,7 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				Log.w( "aaaAAAAAxx21 DOWN", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
 				Log.w( "aaaAAAAAxx21 DOWN", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
 
+
 				if(MainActivity.real.y / 2 < y && PlayerMng.players.get(0).data_id == -1){
 					PlayerMng.players.get(0).start_touch_x = (int)x;
 					PlayerMng.players.get(0).start_touch_y = (int)y;
@@ -813,66 +738,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	@Override public void surfaceDestroyed(SurfaceHolder holder) {
 		thread = null;
 	}
-
-
-	// 指示マーカーの位置を取得
-	public void getIndicatorXY(int start_touch_x,int start_touch_y,int now_touch_x,int now_touch_y,int[] indicatorDiff,int[] indicatorXY){
-		// 移動方向の正、負
-		boolean positive_x = true,positive_y = true;
-		// セーブ位置と現在位置の絶対値差分
-		double sa_x,sa_y;
-		// 絶対値差分と表示位置の比率
-		double ratio;
-
-		// 移動方向の正、負を取得
-		if( start_touch_x > now_touch_x ){
-			positive_x = false;
-		}
-		if( start_touch_y > now_touch_y ){
-			positive_y = false;
-		}
-
-		// セーブ位置と現在位置の絶対値差分を取得
-		sa_x = abs(start_touch_x - now_touch_x);
-		sa_y = abs(start_touch_y - now_touch_y);
-
-		//Log.w( "DEBUG_DATA", "PlayerMng.players.get(0).start_touch_x " + PlayerMng.players.get(0).start_touch_x  );
-		//Log.w( "DEBUG_DATA", "PlayerMng.players.get(0).start_touch_y " + PlayerMng.players.get(0).start_touch_y  );
-		//Log.w( "DEBUG_DATA", "PlayerMng.players.get(0).now_touch_x " + PlayerMng.players.get(0).now_touch_x  );
-		//Log.w( "DEBUG_DATA", "PlayerMng.players.get(0).now_touch_y " + PlayerMng.players.get(0).now_touch_y  );
-
-		//Log.w( "DEBUG_DATA", "sa_x " + sa_x  );
-		//Log.w( "DEBUG_DATA", "sa_y " + sa_y  );
-
-		// 三平方の定理で絶対値差分と表示位置の比率を取得
-		ratio = sqrt( pow(DIRECTION_RADIUS * 2,2) / ( pow(sa_x,2) + pow(sa_y,2) ) );
-
-		//Log.w( "DEBUG_DATA", "pow(160,2) " + pow(DIRECTION_RADIUS * 2,2)  );
-		//Log.w( "DEBUG_DATA", "pow(sa_x,2) " + pow(sa_x,2) );
-		//Log.w( "DEBUG_DATA", "pow(sa_y,2) " + pow(sa_y,2) );
-		//Log.w( "DEBUG_DATA", "ratio " + ratio  );
-
-		// 指示マーカーとセーブ位置の差分を取得（四捨五入のため誤差あり）
-		if( positive_x ) indicatorDiff[0] = (int)round(sa_x * ratio);
-		else indicatorDiff[0] = - (int)round(sa_x * ratio);
-		if( positive_y ) indicatorDiff[1] = (int)round(sa_y * ratio);
-		else indicatorDiff[1] = - (int)round(sa_y * ratio);
-
-		// 四捨五入して指示マーカーの位置を取得
-		indicatorXY[0] = start_touch_x + indicatorDiff[0];
-		indicatorXY[1] = start_touch_y + indicatorDiff[1];
-
-		//Log.w( "DEBUG_DATA", "(int)round(sa_x * ratio) " + (int)round(sa_x * ratio)  );
-		//Log.w( "DEBUG_DATA", "(int)round(sa_y * ratio) " + (int)round(sa_y * ratio)  );
-
-		//Log.w( "DEBUG_DATA", "PlayerMng.players.get(0).indicatorXY[0] " + PlayerMng.players.get(0).indicatorXY[0]  );
-		//Log.w( "DEBUG_DATA", "PlayerMng.players.get(0).indicatorXY[1] " + PlayerMng.players.get(0).indicatorXY[1]  );
-
-		//Log.w( "DEBUG_DATA", "結果 " + ( pow(PlayerMng.players.get(0).indicatorXY[0],2) + pow(PlayerMng.players.get(0).indicatorXY[1],2) )  );
-
-	}
-
-
 
 }
 
