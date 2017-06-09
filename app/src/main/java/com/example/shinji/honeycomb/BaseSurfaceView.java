@@ -122,24 +122,26 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		int count = event.getPointerCount();
 		//タッチアクションの情報を取得
 		int action = event.getAction();
+		int indexId = event.getActionIndex();
+		int pointIdx = event.getPointerId(indexId);
+
 		int data_id;
 		int pointId;
 		float x,y;
 
-		for(int i=0; i<count; i++) {
+//		for(int i = 0; i < count; i++) {
+		//maxindex分
+		for(int i = 0; i < count; i++) {
 			// ポインタID
 			pointId = event.getPointerId(i);
 			// データID
 			data_id = event.findPointerIndex(pointId);
+//			Log.w( "aaaAAAAAxx21 data_id", "FOR data_id " + data_id );
+
 			x = event.getX(data_id);
 			y = event.getY(data_id);
 
 			if (data_id == -1) continue;
-			Log.w( "AAAAAxx1zzz", "PlayerMng.players.get(0).now_touch_x " + PlayerMng.players.get(0).now_touch_x);
-			Log.w( "AAAAAxx1zzz", "PlayerMng.players.get(0).start_touch_x " + PlayerMng.players.get(0).start_touch_x);
-			Log.w( "AAAAAxx1", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id);
-			Log.w( "AAAAAxx1", "MainActivity.real.y " + MainActivity.real.y);
-			Log.w( "AAAAAxx1", "y " + y);
 
 			// Player1の情報
 			if(data_id == PlayerMng.players.get(0).data_id){
@@ -153,19 +155,38 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				PlayerMng.players.get(1).now_touch_x = (int)x;
 				PlayerMng.players.get(1).now_touch_y = (int)y;
 			}
-			Log.i("tag2", "DataIndex[" + data_id + "] PointIndex[" + pointId + "] x[" + x + "]");
-			Log.i("tag2", "DataIndex[" + data_id + "] PointIndex[" + pointId + "] y[" + y + "]");
 		}
 
 		data_id = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+/*
+		int i = 0;
+		while( i != PlayerMng.playerNum - 1 ){
+			if( PlayerMng.players.get(i).data_id == data_id ){
+				data_id++;
+				i = 0;
+				continue;
+			}
+			i++;
+		}
+*/
+//		Log.w( "aaaAAAAAxx21 START", "data_id " + data_id );
+//		for( int i = 0; i < PlayerMng.playerNum; i++ ){
+//			if( PlayerMng.players.get(i).data_id == data_id ){
+//				data_id++;
+//				i = -1;
+//			}
+//		}
+//		Log.w( "aaaAAAAAxx21 END", "data_id " + data_id );
+
+
+		//Log.w( "aaaAAAAAxx21 data_id", "GET data_id " + data_id );
+
 		x = event.getX(data_id);
 		y = event.getY(data_id);
 
+		// 最初の指を下げる
 		switch(action & MotionEvent.ACTION_MASK) {
 			case MotionEvent.ACTION_DOWN:
-				Log.w( "aaaAAAAAxx21 DOWN", "data_id " + data_id );
-				Log.w( "aaaAAAAAxx21 DOWN", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
-				Log.w( "aaaAAAAAxx21 DOWN", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
 
 				if(MainActivity.real.y / 2 < y && PlayerMng.players.get(0).data_id == -1){
 					PlayerMng.players.get(0).start_touch_x = (int)x;
@@ -183,14 +204,15 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					PlayerMng.players.get(1).touch_flg = true;
 					PlayerMng.players.get(1).data_id = data_id;
 				}
-
+				Log.w( "aaaAAAAAxx21 DOWN", "pointIdx " + pointIdx );
+				Log.w( "aaaAAAAAxx21 DOWN", "indexId " + indexId );
+				Log.w( "aaaAAAAAxx21 DOWN", "data_id " + data_id );
+				Log.w( "aaaAAAAAxx21 DOWN", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
+				Log.w( "aaaAAAAAxx21 DOWN", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
 				Log.i("tag1", "Touch Down" + " count=" + count + ", DataIndex=" + data_id);
 				break;
+			// 最初じゃない指を下げる
 			case MotionEvent.ACTION_POINTER_DOWN:
-				Log.w( "aaaAAAAAxx21 DOWN2", "data_id " + data_id );
-				Log.w( "aaaAAAAAxx21 DOWN2", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
-				Log.w( "aaaAAAAAxx21 DOWN2", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
-
 				if(MainActivity.real.y / 2 < y && PlayerMng.players.get(0).data_id == -1){
 					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
 					PlayerMng.players.get(0).start_touch_x = (int)x;
@@ -209,14 +231,46 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					PlayerMng.players.get(1).touch_flg = true;
 					PlayerMng.players.get(1).data_id = data_id;
 				}
-
+				Log.w( "aaaAAAAAxx21 DOWN", "pointIdx " + pointIdx );
+				Log.w( "aaaAAAAAxx21 DOWN", "indexId " + indexId );
+				Log.w( "aaaAAAAAxx21 DOWN2", "data_id " + data_id );
+				Log.w( "aaaAAAAAxx21 DOWN2", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
+				Log.w( "aaaAAAAAxx21 DOWN2", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
 				Log.i("tag1", "Touch PTR Down" + " count=" + count + ", DataIndex=" + data_id);
 				break;
+			// 最後の指一本を上げる
 			case MotionEvent.ACTION_UP:
+
+
+				if(PlayerMng.players.get(0).data_id == data_id){
+					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
+					PlayerMng.players.get(0).touch_flg = false;
+					PlayerMng.players.get(0).data_id = -1;
+					PlayerMng.players.get(0).indicatorXY[0] = 0;
+					PlayerMng.players.get(0).indicatorXY[1] = 0;
+					// 0番がなくなるとデータID1番は0番に変更になる
+					if(PlayerMng.players.get(1).data_id == 1) PlayerMng.players.get(1).data_id = 0;
+				}
+				else if(PlayerMng.players.get(1).data_id == data_id){
+					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa2 ");
+					PlayerMng.players.get(1).touch_flg = false;
+					PlayerMng.players.get(1).data_id = -1;
+					PlayerMng.players.get(1).indicatorXY[0] = 0;
+					PlayerMng.players.get(1).indicatorXY[1] = 0;
+					// 0番がなくなるとデータID1番は0番に変更になる
+					if(PlayerMng.players.get(0).data_id == 1) PlayerMng.players.get(0).data_id = 0;
+				}
+				Log.w( "aaaAAAAAxx21 DOWN", "pointIdx " + pointIdx );
+				Log.w( "aaaAAAAAxx21 DOWN", "indexId " + indexId );
 				Log.w( "aaaAAAAAxx21 UP", "data_id " + data_id );
 				Log.w( "aaaAAAAAxx21 UP", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
 				Log.w( "aaaAAAAAxx21 UP", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
 
+				Log.i("tag1", "Touch Up" + " count=" + count + ", DataIndex=" + data_id);
+				break;
+			// 最後じゃない指を上げる
+			case MotionEvent.ACTION_POINTER_UP:
+
 				if(PlayerMng.players.get(0).data_id == data_id){
 					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
 					PlayerMng.players.get(0).touch_flg = false;
@@ -235,32 +289,11 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					// 0番がなくなるとデータID1番は0番に変更になる
 					if(PlayerMng.players.get(0).data_id == 1) PlayerMng.players.get(0).data_id = 0;
 				}
-
-				Log.i("tag1", "Touch Up" + " count=" + count + ", DataIndex=" + data_id);
-				break;
-			case MotionEvent.ACTION_POINTER_UP:
+				Log.w( "aaaAAAAAxx21 DOWN", "pointIdx " + pointIdx );
+				Log.w( "aaaAAAAAxx21 DOWN", "indexId " + indexId );
 				Log.w( "aaaAAAAAxx21 UP2", "data_id " + data_id );
 				Log.w( "aaaAAAAAxx21 UP2", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
 				Log.w( "aaaAAAAAxx21 UP2", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
-
-				if(PlayerMng.players.get(0).data_id == data_id){
-					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
-					PlayerMng.players.get(0).touch_flg = false;
-					PlayerMng.players.get(0).data_id = -1;
-					PlayerMng.players.get(0).indicatorXY[0] = 0;
-					PlayerMng.players.get(0).indicatorXY[1] = 0;
-					// 0番がなくなるとデータID1番は0番に変更になる
-					if(PlayerMng.players.get(1).data_id == 1) PlayerMng.players.get(1).data_id = 0;
-				}
-				else if(PlayerMng.players.get(1).data_id == data_id){
-					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa2 ");
-					PlayerMng.players.get(1).touch_flg = false;
-					PlayerMng.players.get(1).data_id = -1;
-					PlayerMng.players.get(1).indicatorXY[0] = 0;
-					PlayerMng.players.get(1).indicatorXY[1] = 0;
-					// 0番がなくなるとデータID1番は0番に変更になる
-					if(PlayerMng.players.get(0).data_id == 1) PlayerMng.players.get(0).data_id = 0;
-				}
 
 				Log.i("tag1", "Touch PTR Up" + " count=" + count + ", DataIndex=" + data_id);
 				break;
