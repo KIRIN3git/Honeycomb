@@ -3,7 +3,6 @@ package com.example.shinji.honeycomb;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -24,7 +23,7 @@ public class PlayerMng{
 	// プレイヤースタート位置
 	static int playerXY[][] = {{0,-100},{0,100}};
 	// プレイヤーカラー
-	static int playerColorOption[] = {1,2};
+	static int playerColorNo[] = {1,2};
 
 	// プレイヤーの半径
 	static int PLAYER_RADIUS;
@@ -66,7 +65,7 @@ public class PlayerMng{
 
 		players.clear();
 		for( int i = 0; i < playerNum; i++ ){
-			player = new PlayerStatus( playerXY[i][0],playerXY[i][1],playerColorOption[i] );
+			player = new PlayerStatus( playerXY[i][0],playerXY[i][1], playerColorNo[i] );
 			players.add(player);
 		}
 	}
@@ -77,7 +76,7 @@ public class PlayerMng{
 		float center_y = canvas.getHeight() / 2;
 
 		paint.reset();
-		paint.setAntiAlias(true);
+//		paint.setAntiAlias(true);
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 
 //		paint.setColor(Color.argb(255, PlayerMng.players.get(1).r, PlayerMng.players.get(1).g, PlayerMng.players.get(1).b));

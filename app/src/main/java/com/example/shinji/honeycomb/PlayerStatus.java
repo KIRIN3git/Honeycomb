@@ -51,9 +51,6 @@ public class PlayerStatus{
 //    final static int P2_B = 127;
 	}
 
-	public int test(){
-		return now_position_x;
-	}
 
 
 
