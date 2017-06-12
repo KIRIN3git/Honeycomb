@@ -18,8 +18,8 @@ public class PlayerStatus{
 	int now_touch_x,now_touch_y;
 	// タッチ中かのフラグ
 	boolean touch_flg;
-	// タッチ用データID
-	int data_id;
+	// タッチ用ポイントID
+	int point_id;
 	// 一つ前の塗りつぶしi,j
 	int before_fill_i,before_fill_j;
 	// 指示器のXY位置
@@ -32,7 +32,7 @@ public class PlayerStatus{
 		start_position_y = y;
 		now_position_x = x;
 		now_position_y = y;
-		data_id = -1;
+		point_id = -1;
 
 		if( color_no == 1 ){
 			r = 50;

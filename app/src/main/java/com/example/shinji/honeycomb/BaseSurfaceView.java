@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -24,10 +23,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 	final static int SQUARE_LENGTH = 100;
 
-	// プライヤーオブジェクト
-//	PlayerStatus player1 = new PlayerStatus( 0,-100,1 );
-//	PlayerStatus player2 = new PlayerStatus( 0,100,2 );
-
 	// スクリーンの大きさ(px)
 	int screen_width, screen_height;
 
@@ -39,9 +34,6 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int BACK_R = 200 ;
 	final static int BACK_G = 200 ;
 	final static int BACK_B = 200 ;
-
-
-
 
 	SurfaceHolder surfaceHolder;
 	Thread thread;
@@ -120,189 +112,82 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 		// タッチしている数を取得
 		int count = event.getPointerCount();
-		//タッチアクションの情報を取得
+		// タッチアクションの情報を取得
 		int action = event.getAction();
-		int indexId = event.getActionIndex();
-		int pointIdx = event.getPointerId(indexId);
+		int index_id = event.getActionIndex();
+		int point_id = event.getPointerId(index_id);
 
-		int data_id;
-		int pointId;
+		int user_i = -1;
 		float x,y;
+		x = event.getX(index_id);
+		y = event.getY(index_id);
 
-//		for(int i = 0; i < count; i++) {
-		//maxindex分
-		for(int i = 0; i < count; i++) {
-			// ポインタID
-			pointId = event.getPointerId(i);
-			// データID
-			data_id = event.findPointerIndex(pointId);
-//			Log.w( "aaaAAAAAxx21 data_id", "FOR data_id " + data_id );
-
-			x = event.getX(data_id);
-			y = event.getY(data_id);
-
-			if (data_id == -1) continue;
-
-			// Player1の情報
-			if(data_id == PlayerMng.players.get(0).data_id){
-				// タッチしている位置取得
-				PlayerMng.players.get(0).now_touch_x = (int)x;
-				PlayerMng.players.get(0).now_touch_y = (int)y;
-			}
-			// 画面上半分の位置をタップ
-			else if(data_id == PlayerMng.players.get(1).data_id){
-				// タッチしている位置取得
-				PlayerMng.players.get(1).now_touch_x = (int)x;
-				PlayerMng.players.get(1).now_touch_y = (int)y;
-			}
-		}
-
-		data_id = (action & MotionEvent.ACTION_POINTER_INDEX_MASK) >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-/*
-		int i = 0;
-		while( i != PlayerMng.playerNum - 1 ){
-			if( PlayerMng.players.get(i).data_id == data_id ){
-				data_id++;
-				i = 0;
-				continue;
-			}
-			i++;
-		}
-*/
-//		Log.w( "aaaAAAAAxx21 START", "data_id " + data_id );
-//		for( int i = 0; i < PlayerMng.playerNum; i++ ){
-//			if( PlayerMng.players.get(i).data_id == data_id ){
-//				data_id++;
-//				i = -1;
-//			}
-//		}
-//		Log.w( "aaaAAAAAxx21 END", "data_id " + data_id );
-
-
-		//Log.w( "aaaAAAAAxx21 data_id", "GET data_id " + data_id );
-
-		x = event.getX(data_id);
-		y = event.getY(data_id);
-
-		// 最初の指を下げる
 		switch(action & MotionEvent.ACTION_MASK) {
+			// 最初の指を下げる
 			case MotionEvent.ACTION_DOWN:
-
-				if(MainActivity.real.y / 2 < y && PlayerMng.players.get(0).data_id == -1){
-					PlayerMng.players.get(0).start_touch_x = (int)x;
-					PlayerMng.players.get(0).start_touch_y = (int)y;
-					PlayerMng.players.get(0).now_touch_x = (int)x;
-					PlayerMng.players.get(0).now_touch_y = (int)y;
-					PlayerMng.players.get(0).touch_flg = true;
-					PlayerMng.players.get(0).data_id = data_id;
-				}
-				else if(MainActivity.real.y / 2 > y && PlayerMng.players.get(1).data_id == -1){
-					PlayerMng.players.get(1).start_touch_x = (int)x;
-					PlayerMng.players.get(1).start_touch_y = (int)y;
-					PlayerMng.players.get(1).now_touch_x = (int)x;
-					PlayerMng.players.get(1).now_touch_y = (int)y;
-					PlayerMng.players.get(1).touch_flg = true;
-					PlayerMng.players.get(1).data_id = data_id;
-				}
-				Log.w( "aaaAAAAAxx21 DOWN", "pointIdx " + pointIdx );
-				Log.w( "aaaAAAAAxx21 DOWN", "indexId " + indexId );
-				Log.w( "aaaAAAAAxx21 DOWN", "data_id " + data_id );
-				Log.w( "aaaAAAAAxx21 DOWN", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
-				Log.w( "aaaAAAAAxx21 DOWN", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
-				Log.i("tag1", "Touch Down" + " count=" + count + ", DataIndex=" + data_id);
-				break;
 			// 最初じゃない指を下げる
 			case MotionEvent.ACTION_POINTER_DOWN:
-				if(MainActivity.real.y / 2 < y && PlayerMng.players.get(0).data_id == -1){
-					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
-					PlayerMng.players.get(0).start_touch_x = (int)x;
-					PlayerMng.players.get(0).start_touch_y = (int)y;
-					PlayerMng.players.get(0).now_touch_x = (int)x;
-					PlayerMng.players.get(0).now_touch_y = (int)y;
-					PlayerMng.players.get(0).touch_flg = true;
-					PlayerMng.players.get(0).data_id = data_id;
+
+				//2人プレイなら
+				if(PlayerMng.playerNum == 2){
+					//フィールド下半分が1P
+					if( MainActivity.real.y / 2 < y )
+						user_i = 0;
+					else user_i = 1;
 				}
-				else if(MainActivity.real.y / 2 > y && PlayerMng.players.get(1).data_id == -1){
-					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa2 ");
-					PlayerMng.players.get(1).start_touch_x = (int)x;
-					PlayerMng.players.get(1).start_touch_y = (int)y;
-					PlayerMng.players.get(1).now_touch_x = (int)x;
-					PlayerMng.players.get(1).now_touch_y = (int)y;
-					PlayerMng.players.get(1).touch_flg = true;
-					PlayerMng.players.get(1).data_id = data_id;
-				}
-				Log.w( "aaaAAAAAxx21 DOWN", "pointIdx " + pointIdx );
-				Log.w( "aaaAAAAAxx21 DOWN", "indexId " + indexId );
-				Log.w( "aaaAAAAAxx21 DOWN2", "data_id " + data_id );
-				Log.w( "aaaAAAAAxx21 DOWN2", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
-				Log.w( "aaaAAAAAxx21 DOWN2", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
-				Log.i("tag1", "Touch PTR Down" + " count=" + count + ", DataIndex=" + data_id);
+				else break;
+
+				// 未タッチでなければ、処理せず
+				if(PlayerMng.players.get(user_i).point_id != -1) break;
+
+				PlayerMng.players.get(user_i).start_touch_x = (int)x;
+				PlayerMng.players.get(user_i).start_touch_y = (int)y;
+				PlayerMng.players.get(user_i).now_touch_x = (int)x;
+				PlayerMng.players.get(user_i).now_touch_y = (int)y;
+				PlayerMng.players.get(user_i).touch_flg = true;
+				PlayerMng.players.get(user_i).point_id = point_id;
+
 				break;
 			// 最後の指一本を上げる
 			case MotionEvent.ACTION_UP:
-
-
-				if(PlayerMng.players.get(0).data_id == data_id){
-					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
-					PlayerMng.players.get(0).touch_flg = false;
-					PlayerMng.players.get(0).data_id = -1;
-					PlayerMng.players.get(0).indicatorXY[0] = 0;
-					PlayerMng.players.get(0).indicatorXY[1] = 0;
-					// 0番がなくなるとデータID1番は0番に変更になる
-					if(PlayerMng.players.get(1).data_id == 1) PlayerMng.players.get(1).data_id = 0;
-				}
-				else if(PlayerMng.players.get(1).data_id == data_id){
-					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa2 ");
-					PlayerMng.players.get(1).touch_flg = false;
-					PlayerMng.players.get(1).data_id = -1;
-					PlayerMng.players.get(1).indicatorXY[0] = 0;
-					PlayerMng.players.get(1).indicatorXY[1] = 0;
-					// 0番がなくなるとデータID1番は0番に変更になる
-					if(PlayerMng.players.get(0).data_id == 1) PlayerMng.players.get(0).data_id = 0;
-				}
-				Log.w( "aaaAAAAAxx21 DOWN", "pointIdx " + pointIdx );
-				Log.w( "aaaAAAAAxx21 DOWN", "indexId " + indexId );
-				Log.w( "aaaAAAAAxx21 UP", "data_id " + data_id );
-				Log.w( "aaaAAAAAxx21 UP", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
-				Log.w( "aaaAAAAAxx21 UP", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
-
-				Log.i("tag1", "Touch Up" + " count=" + count + ", DataIndex=" + data_id);
-				break;
 			// 最後じゃない指を上げる
 			case MotionEvent.ACTION_POINTER_UP:
 
-				if(PlayerMng.players.get(0).data_id == data_id){
-					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa1 ");
-					PlayerMng.players.get(0).touch_flg = false;
-					PlayerMng.players.get(0).data_id = -1;
-					PlayerMng.players.get(0).indicatorXY[0] = 0;
-					PlayerMng.players.get(0).indicatorXY[1] = 0;
-					// 0番がなくなるとデータID1番は0番に変更になる
-					if(PlayerMng.players.get(1).data_id == 1) PlayerMng.players.get(1).data_id = 0;
+				for( user_i = 0; user_i < PlayerMng.playerNum; user_i++ ){
+					if( PlayerMng.players.get(user_i).point_id == point_id ) break;
 				}
-				else if(PlayerMng.players.get(1).data_id == data_id){
-					Log.w( "AAAAAxx21", "aaaaaaaaaaaaaaaa2 ");
-					PlayerMng.players.get(1).touch_flg = false;
-					PlayerMng.players.get(1).data_id = -1;
-					PlayerMng.players.get(1).indicatorXY[0] = 0;
-					PlayerMng.players.get(1).indicatorXY[1] = 0;
-					// 0番がなくなるとデータID1番は0番に変更になる
-					if(PlayerMng.players.get(0).data_id == 1) PlayerMng.players.get(0).data_id = 0;
-				}
-				Log.w( "aaaAAAAAxx21 DOWN", "pointIdx " + pointIdx );
-				Log.w( "aaaAAAAAxx21 DOWN", "indexId " + indexId );
-				Log.w( "aaaAAAAAxx21 UP2", "data_id " + data_id );
-				Log.w( "aaaAAAAAxx21 UP2", "PlayerMng.players.get(0).data_id " + PlayerMng.players.get(0).data_id );
-				Log.w( "aaaAAAAAxx21 UP2", "PlayerMng.players.get(1).data_id " + PlayerMng.players.get(1).data_id );
+				// ユーザー一致せず
+				if( user_i == PlayerMng.playerNum ) break;
 
-				Log.i("tag1", "Touch PTR Up" + " count=" + count + ", DataIndex=" + data_id);
+				PlayerMng.players.get(user_i).touch_flg = false;
+				PlayerMng.players.get(user_i).point_id = -1;
+				PlayerMng.players.get(user_i).indicatorXY[0] = 0;
+				PlayerMng.players.get(user_i).indicatorXY[1] = 0;
+
 				break;
+
 		}
 
-		//	Log.w( "DEBUG_DATA", "tauch x " + PlayerMng.players.get(0).now_touch_x );
-		//	Log.w( "DEBUG_DATA", "tauch y " + PlayerMng.players.get(0).now_touch_y );
-		//PlayerMng.players.get(0).now_position_x += 3;
-		//PlayerMng.players.get(0).now_position_y += 3;
+		for(int i = 0; i < count; i++) {
+			// ポインタID
+			point_id = event.getPointerId(i);
+			// インデックスID
+			//index_id = event.findPointerIndex(point_id);
+			index_id = i; // 必ず同一
+
+			x = event.getX(index_id);
+			y = event.getY(index_id);
+
+			if (point_id == -1) continue;
+
+			for( user_i = 0; user_i < PlayerMng.playerNum; user_i++ ){
+				if(point_id == PlayerMng.players.get(user_i).point_id ){
+					// タッチしている位置取得
+					PlayerMng.players.get(user_i).now_touch_x = (int)x;
+					PlayerMng.players.get(user_i).now_touch_y = (int)y;
+				}
+			}
+		}
 		// 再描画の指示
 		invalidate();
 
