@@ -30,11 +30,9 @@ public class TimeMng{
 	// 前回時間
 	static long BeforeTimeMillis = startCountDownMS;
 
-
-
 	static boolean countDownFlg = false;
 	static boolean fightFlg = false;
-
+	static boolean gameOverFlg = false;
 
 	// FPS
 	static long run_start_time = 0, run_end_time = 0;
@@ -108,7 +106,12 @@ public class TimeMng{
 		paint.setTextSize(LIMIT_TEXT_SIZE);
 		paint.setColor(Color.RED);
 		if( ss >= 0 ) canvas.drawText(String.format("%02d", ss), 0, canvas.getHeight(), paint);
-		else canvas.drawText("STOP", 0, canvas.getHeight(), paint);
+		else{
+			canvas.drawText("STOP", 0, canvas.getHeight(), paint);
+			// 試合終了
+			fightFlg = false;
+			gameOverFlg = true;
+		}
 	}
 
 	public static void fpsStart(){

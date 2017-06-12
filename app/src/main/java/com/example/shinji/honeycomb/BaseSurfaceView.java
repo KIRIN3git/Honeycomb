@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -18,17 +17,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	// 投げて取って下の範囲が囲まれているか？
 	// 爆発
 
-	// 四角の縦、横の数
-	final static int SQUARE_NUM = 11;
-
-	final static int SQUARE_LENGTH = 100;
-
 	// スクリーンの大きさ(px)
 	int screen_width, screen_height;
-
-	// Canvas 中心点
-	float center_x = 0.0f;
-	float center_y = 0.0f;
 
 	// 背景RGB
 	final static int BACK_R = 200 ;
@@ -74,26 +64,31 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				canvas = surfaceHolder.lockCanvas();
 				canvas.drawRect( 0, 0, screen_width, screen_height, bgPaint);
 
-				// タップ移動比率xyと指示マーカーのxyを取得
-				if(TimeMng.fightFlg) PlayerMng.GetMoveXY();
+				if(!TimeMng.gameOverFlg ){
+					// タップ移動比率xyと指示マーカーのxyを取得
+					if( TimeMng.fightFlg ) PlayerMng.GetMoveXY();
 
-				// 基本六角形
-				FieldMng.DrawHex(paint, canvas);
+					// 基本六角形
+					FieldMng.DrawHex(paint, canvas);
 
-				// プレイヤーの表示
-				PlayerMng.DrawPlayer(paint, canvas);
+					// プレイヤーの表示
+					PlayerMng.DrawPlayer(paint, canvas);
 
-				// カウントダウン中
-				if(TimeMng.countDownFlg){
-					// 開始カウントダウンの表示
-					TimeMng.drawCountDown(paint, canvas);
+					// カウントダウン中
+					if( TimeMng.countDownFlg ){
+						// 開始カウントダウンの表示
+						TimeMng.drawCountDown(paint, canvas);
+					}
+					// 試合中
+					else if( TimeMng.fightFlg ){
+						// 指示器の表示
+						PlayerMng.DrawIndicator(paint, canvas);
+						// リミット時間の表示
+						TimeMng.drawLimitTime(paint, canvas);
+					}
 				}
-				// 試合中
-				else if(TimeMng.fightFlg){
-					// 指示器の表示
-					PlayerMng.DrawIndicator(paint, canvas);
-					// リミット時間の表示
-					TimeMng.drawLimitTime(paint, canvas);
+				else{
+
 				}
 
 				// 描画
