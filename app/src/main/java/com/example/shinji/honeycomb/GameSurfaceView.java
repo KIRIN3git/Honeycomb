@@ -1,9 +1,11 @@
 package com.example.shinji.honeycomb;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -12,7 +14,7 @@ import android.view.SurfaceView;
  * Created by shinji on 2017/04/06.
  */
 
-public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHolder.Callback{
+public class GameSurfaceView extends SurfaceView implements  Runnable,SurfaceHolder.Callback{
 
 	// 投げて取って下の範囲が囲まれているか？
 	// 爆発
@@ -24,13 +26,17 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 	final static int BACK_R = 200 ;
 	final static int BACK_G = 200 ;
 	final static int BACK_B = 200 ;
-
+	boolean scoreFlg;
 	SurfaceHolder surfaceHolder;
 	Thread thread;
 
-	public BaseSurfaceView(Context context){
+	public GameSurfaceView(Context context){
 		super(context);
 
+		GameSurfaceView surfaceView;
+
+//		surfaceView = new BaseSurfaceView(getContext());
+//		setContentView(surfaceView);
 
 		// フィールド情報の初期化
 		FieldMng.fieldInit();
@@ -38,6 +44,8 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 		PlayerMng.playerInit();
 		// 時間情報の初期化
 		TimeMng.timeInit();
+
+		scoreFlg = false;
 
 		surfaceHolder = getHolder();
 		surfaceHolder.addCallback(this);
@@ -64,30 +72,42 @@ public class BaseSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				canvas = surfaceHolder.lockCanvas();
 				canvas.drawRect( 0, 0, screen_width, screen_height, bgPaint);
 
-				if(!TimeMng.gameOverFlg ){
-					// タップ移動比率xyと指示マーカーのxyを取得
-					if( TimeMng.fightFlg ) PlayerMng.GetMoveXY();
 
-					// 基本六角形
-					FieldMng.DrawHex(paint, canvas);
+				// タップ移動比率xyと指示マーカーのxyを取得
+				if( TimeMng.battleFlg ) PlayerMng.GetMoveXY();
 
-					// プレイヤーの表示
-					PlayerMng.DrawPlayer(paint, canvas);
+				// 基本六角形
+				FieldMng.DrawHex(paint, canvas);
 
-					// カウントダウン中
-					if( TimeMng.countDownFlg ){
-						// 開始カウントダウンの表示
-						TimeMng.drawCountDown(paint, canvas);
-					}
-					// 試合中
-					else if( TimeMng.fightFlg ){
-						// 指示器の表示
-						PlayerMng.DrawIndicator(paint, canvas);
-						// リミット時間の表示
-						TimeMng.drawLimitTime(paint, canvas);
-					}
+				// プレイヤーの表示
+				PlayerMng.DrawPlayer(paint, canvas);
+
+				// カウントダウン中
+				if( TimeMng.countDownFlg ){
+					// 開始カウントダウンの表示
+					TimeMng.drawCountDown(paint, canvas);
 				}
-				else{
+				// 試合中
+				else if( TimeMng.battleFlg ){
+					// 指示器の表示
+					PlayerMng.DrawIndicator(paint, canvas);
+					// リミット時間の表示
+					TimeMng.drawLimitTime(paint, canvas);
+				}
+				else if( TimeMng.gameOverFlg) {
+					Log.w( "AAAAA", "AAAAAEEEEEWWWWWWWWEEEE0");
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+					}
+
+					// インテントのインスタンス生成
+					Intent intent = new Intent(getContext(), ScoreActivity.class);
+					// スコア画面の起動
+					if(!scoreFlg){
+						getContext().startActivity(intent);
+						scoreFlg = true;
+					}
 
 				}
 

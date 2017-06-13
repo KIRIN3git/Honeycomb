@@ -27,12 +27,15 @@ public class PlayerStatus{
 	// 開始位置と指示器の差分
 	int indicatorDiff[] = {0,0};
 
+	int score;
+
 	PlayerStatus( int x,int y,int color_no ){
 		start_position_x = x;
 		start_position_y = y;
 		now_position_x = x;
 		now_position_y = y;
 		point_id = -1;
+		score = 0;
 
 		if( color_no == 1 ){
 			r = 50;

@@ -21,7 +21,6 @@ public class FieldMng{
 	final static int DALETE_NO = 9;
 
 
-
 	// 六角形の塗りつぶし確認
 	static int hex_color_num[][];
 
@@ -139,7 +138,7 @@ public class FieldMng{
 			for( int row_i = 0; row_i < HEX_NUM_ROW; row_i++ ){
 
 				// 移動分
-				// i - ( HEX_NUM / 2 ),j - ( HEX_NUM / 2 ) は左右対称にするため
+				// row_i - ( HEX_NUM / 2 ),col_i - ( HEX_NUM / 2 ) は左右対称にするため
 				add_x = HEX_LENGTH * (3.0f/2.0f) * (float)(row_i - ( HEX_NUM_ROW / 2 ));
 				if( (row_i - ( HEX_NUM_ROW / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 ));
 				else  add_y = HEX_LENGTH * HEX_RATIO + ( (HEX_LENGTH * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 )));
@@ -170,6 +169,58 @@ public class FieldMng{
 
 				// 表示なし
 				if( hex_color_num[col_i][row_i] == DALETE_NO ) continue;
+
+				// 六角形の描画
+				paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[col_i][row_i]][0], hex_color_rgb[hex_color_num[col_i][row_i]][1], hex_color_rgb[hex_color_num[col_i][row_i]][2]));
+				path.reset();
+				// 右
+				path.moveTo(center_x + HEX_LENGTH - HEX_WIDHT + add_x, center_y + add_y);
+				// 右下
+				path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y);
+				// 左下
+				path.lineTo(center_x - (HEX_LENGTH / 2) + (HEX_WIDHT / 2) + add_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y);
+				// 左
+				path.lineTo(center_x - HEX_LENGTH + HEX_WIDHT + add_x, center_y + add_y);
+				// 左上
+				path.lineTo(center_x - (HEX_LENGTH / 2) + (HEX_WIDHT / 2) + add_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y);
+				// 右上
+				path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y);
+				path.close();
+				canvas.drawPath(path, paint);
+
+			}
+		}
+	}
+
+
+	public static void CountHex(Paint paint, Canvas canvas, int col_check,int row_check){
+		float add_x,add_y;
+
+		// Canvas 中心点
+		float center_x = canvas.getWidth() / 2;
+		float center_y = canvas.getHeight() / 2;
+
+		// パスを設定
+		Path path = new Path();
+
+		paint.reset();
+		paint.setStrokeWidth(HEX_WIDHT);
+		paint.setStyle(Paint.Style.FILL_AND_STROKE);
+		for( int col_i = 0; col_i < HEX_NUM_COL; col_i++ ){
+			for( int row_i = 0; row_i < HEX_NUM_ROW; row_i++ ){
+
+				// 移動分
+				// row_i - ( HEX_NUM / 2 ),col_i - ( HEX_NUM / 2 ) は左右対称にするため
+				add_x = HEX_LENGTH * (3.0f/2.0f) * (float)(row_i - ( HEX_NUM_ROW / 2 ));
+				if( (row_i - ( HEX_NUM_ROW / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 ));
+				else  add_y = HEX_LENGTH * HEX_RATIO + ( (HEX_LENGTH * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 )));
+//				Log.w( "LOG1", "col_i[" + col_i + "] add_x[" + add_x + "]");
+//				Log.w( "LOG1", "row_i[" + row_i + "] add_y[" + add_y + "]");
+
+				// 表示なし
+				if( hex_color_num[col_i][row_i] == DALETE_NO ) continue;
+
+
 
 				// 六角形の描画
 				paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[col_i][row_i]][0], hex_color_rgb[hex_color_num[col_i][row_i]][1], hex_color_rgb[hex_color_num[col_i][row_i]][2]));
