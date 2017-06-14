@@ -16,9 +16,11 @@ public class FieldMng{
 	final static int HEX_NUM_ROW = 15;
 	final static int HEX_NUM_COL = 16;
 
-
+	final static int COUNT_NO = 7;
 	final static int WALL_NO = 8;
 	final static int DALETE_NO = 9;
+
+	static boolean countHitFlg = false;
 
 
 	// 六角形の塗りつぶし確認
@@ -58,7 +60,7 @@ public class FieldMng{
 			{129 ,129 ,129},
 			{129 ,129 ,129},
 			{129 ,129 ,129},
-			{129 ,129 ,129},
+			{255 ,193 ,255},
 			{129 ,129 ,129},
 			{129 ,129 ,129}
 	};
@@ -93,6 +95,26 @@ public class FieldMng{
 				{8,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
 				{8,8,8,8,8,8,8,8,8,8,8,8,8,8,8}
 		};
+
+
+//		hex_color_num = new int[][]{
+//				{8,8,8,8,8,8,8,8,8,8,8,8,8,8,8},
+//				{8,1,1,1,1,1,2,2,2,2,2,1,1,1,8},
+//				{8,1,0,0,0,0,1,1,1,1,1,1,1,1,8},
+//				{8,1,2,2,2,2,2,2,2,1,1,1,1,0,8},
+//				{8,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
+//				{8,0,0,0,0,2,2,2,2,2,2,2,2,2,8},
+//				{8,2,2,2,2,1,1,1,1,1,1,1,1,1,8},
+//				{8,1,0,0,0,0,0,0,0,0,0,0,0,0,8},
+//				{8,0,0,0,0,0,1,1,1,1,1,1,1,1,8},
+//				{8,1,1,1,1,1,2,2,2,2,1,1,1,1,8},
+//				{8,1,1,1,1,1,1,1,1,0,0,0,0,0,8},
+//				{8,0,0,0,0,1,1,1,1,1,1,1,1,1,8},
+//				{8,1,0,1,2,2,2,2,2,2,2,2,2,2,8},
+//				{8,2,2,2,2,2,2,2,2,0,0,0,0,0,8},
+//				{8,0,0,0,0,0,0,0,0,0,2,2,2,2,8},
+//				{8,8,8,8,8,8,8,8,8,8,8,8,8,8,8}
+//		};
 
 		// 端末に合わせた各サイズの調整
 		if( MainActivity.real.x >= 1080 ) {
@@ -209,6 +231,17 @@ public class FieldMng{
 		for( int col_i = 0; col_i < HEX_NUM_COL; col_i++ ){
 			for( int row_i = 0; row_i < HEX_NUM_ROW; row_i++ ){
 
+				if( col_check == col_i && row_check == row_i ){
+					for( int user_i = 0; user_i < PlayerMng.playerNum; user_i++ ){
+						if( hex_color_num[col_i][row_i] == PlayerMng.playerColorNo[user_i] ){
+							hex_color_num[col_i][row_i] = COUNT_NO;
+							countHitFlg = true;
+							PlayerMng.players.get(user_i).score++;
+							TimeMng.setFps(10);
+						}
+					}
+				}
+
 				// 移動分
 				// row_i - ( HEX_NUM / 2 ),col_i - ( HEX_NUM / 2 ) は左右対称にするため
 				add_x = HEX_LENGTH * (3.0f/2.0f) * (float)(row_i - ( HEX_NUM_ROW / 2 ));
@@ -220,11 +253,10 @@ public class FieldMng{
 				// 表示なし
 				if( hex_color_num[col_i][row_i] == DALETE_NO ) continue;
 
-
-
 				// 六角形の描画
 				paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[col_i][row_i]][0], hex_color_rgb[hex_color_num[col_i][row_i]][1], hex_color_rgb[hex_color_num[col_i][row_i]][2]));
 				path.reset();
+
 				// 右
 				path.moveTo(center_x + HEX_LENGTH - HEX_WIDHT + add_x, center_y + add_y);
 				// 右下
@@ -239,7 +271,6 @@ public class FieldMng{
 				path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y);
 				path.close();
 				canvas.drawPath(path, paint);
-
 			}
 		}
 	}

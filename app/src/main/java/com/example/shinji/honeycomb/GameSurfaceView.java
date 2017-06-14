@@ -114,7 +114,7 @@ public class GameSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 				// 描画
 				surfaceHolder.unlockCanvasAndPost(canvas);
 
-				// FPS
+				// fps
 				TimeMng.fpsEnd();
 
 			} catch(Exception e){}

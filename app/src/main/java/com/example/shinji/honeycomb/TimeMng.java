@@ -18,12 +18,12 @@ public class TimeMng{
 	static int LIMIT_TEXT_SIZE;
 
 	// カウントダウン秒
-//	static int countDownS = 3;
-	static int countDownS = 1;
+	static int countDownS = 3;
+//	static int countDownS = 1;
 	static long countDownMS = countDownS * 1000;
 	//バトル時間秒
-//	static int battleS = 60;
-	static int battleS = 3;
+	static int battleS = 60;
+	//	static int battleS = 3;
 	static long battleMS = battleS * 1000;
 	// カウントダウン開始時間保存
 	static long startCountDownMS;
@@ -38,10 +38,11 @@ public class TimeMng{
 	static boolean battleFlg = false;
 	static boolean gameOverFlg = false;
 
-	// FPS
+	// fps
 	static long run_start_time = 0, run_end_time = 0;
-	static final long FPS = 180;
-	static final long FPS_MSEC = 1000/FPS;
+	static long FPS_DEFO = 180;
+	static long fps = FPS_DEFO;
+	static long fpsMsec = 1000/ fps;
 	static String printText = "";
 
 	public static void timeInit(){
@@ -127,6 +128,9 @@ public class TimeMng{
 		}
 	}
 
+	public static void setFps(long fps){
+		fpsMsec = 1000/ fps;
+	}
 	public static void fpsStart(){
 		// FPSのためにwhileの起動時間保存
 		run_start_time = System.currentTimeMillis();
@@ -135,12 +139,13 @@ public class TimeMng{
 	// 処理が速い場合は若干のスリープ
 	public static void fpsEnd(){
 		run_end_time = System.currentTimeMillis();
-//                Log.w( "FPS", String.valueOf( 1000 / (run_end_time - run_start_time) ) );
-		if(run_end_time - run_start_time < FPS_MSEC){ // 1000 / 60 = 16.6666
+//                Log.w( "fps", String.valueOf( 1000 / (run_end_time - run_start_time) ) );
+		if(run_end_time - run_start_time < fpsMsec ){ // 1000 / 60 = 16.6666
 			try {
-				Thread.sleep(FPS_MSEC - (run_end_time - run_start_time));
+				Thread.sleep(fpsMsec - (run_end_time - run_start_time));
 			} catch (InterruptedException e) {
 			}
 		}
+		setFps( FPS_DEFO );
 	}
 }

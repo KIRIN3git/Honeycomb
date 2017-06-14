@@ -207,4 +207,17 @@ public class PlayerMng{
 		//Log.w( "DEBUG_DATA", "結果 " + ( pow(PlayerMng.players.get(0).indicatorXY[0],2) + pow(PlayerMng.players.get(0).indicatorXY[1],2) )  );
 
 	}
+
+	public static int checkWinner(){
+		int win_user_id = -1;
+		int win_score = -1;
+		for( int i = 0; i < playerNum; i++ ){
+			if( players.get(i).score > win_score ){
+				win_user_id = playerColorNo[i];
+				win_score = players.get(i).score;
+			}
+		}
+
+		return win_user_id;
+	}
 }
