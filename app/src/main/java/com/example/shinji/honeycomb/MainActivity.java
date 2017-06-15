@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity{
 
 	public static Point real;
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity{
 			public void onClick(View v) {
 				// インテントのインスタンス生成
 				Intent intent = new Intent(MainActivity.this, GameActivity.class);
-				// メイン画面の起動
+				// ゲーム画面の起動
 				startActivity(intent);
 			}
 		});
