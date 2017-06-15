@@ -32,6 +32,9 @@ public class PlayerMng{
 	// 移動マーカーの半径
 	static float DIRECTION_RADIUS_DP = 20.0f;
 	static float DIRECTION_RADIUS_PX;
+	// 移動マーカーの線の太さ
+	static float DIRECTION_WIDHT_DP = 5.0f;
+	static float DIRECTION_WIDHT_PX;
 
 	// プレイヤーのスピード
 	final static int playerSpeed[] = {10,10};
@@ -51,6 +54,7 @@ public class PlayerMng{
 		float density = context.getResources().getDisplayMetrics().density;
 		PLAYER_RADIUS_PX = CommonMng.PxToDp(PLAYER_RADIUS_DP,density);
 		DIRECTION_RADIUS_PX = CommonMng.PxToDp(DIRECTION_RADIUS_DP,density);
+		DIRECTION_WIDHT_PX = CommonMng.PxToDp(DIRECTION_WIDHT_DP,density);
 
 		players.clear();
 		for( int i = 0; i < playerNum; i++ ){
@@ -94,7 +98,7 @@ public class PlayerMng{
 			// セーブタップ位置に〇を表示
 			paint.reset();
 			paint.setColor(Color.argb(120, 188, 200, 219)); // 水浅葱
-			paint.setStrokeWidth(20);
+			paint.setStrokeWidth(DIRECTION_WIDHT_PX);
 			paint.setStyle(Paint.Style.STROKE);
 			paint.setAntiAlias(true);
 			canvas.drawCircle(start_touch_x, start_touch_y, DIRECTION_RADIUS_PX, paint);
@@ -102,7 +106,7 @@ public class PlayerMng{
 			// セーブタップ位置を中心にタップ〇移動範囲を表示
 			paint.reset();
 			paint.setColor(Color.argb(120, 188, 200, 219)); // 水浅葱
-			paint.setStrokeWidth(20);
+			paint.setStrokeWidth(DIRECTION_WIDHT_PX);
 			paint.setStyle(Paint.Style.STROKE);
 			paint.setAntiAlias(true);
 			canvas.drawCircle(start_touch_x, start_touch_y, DIRECTION_RADIUS_PX * 3, paint);
@@ -110,7 +114,7 @@ public class PlayerMng{
 			// 移動方向に〇を表示
 			paint.reset();
 			paint.setColor(Color.argb(120, 235, 121, 136)); // ピンク
-			paint.setStrokeWidth(20);
+			paint.setStrokeWidth(DIRECTION_WIDHT_PX);
 			paint.setStyle(Paint.Style.STROKE);
 			paint.setAntiAlias(true);
 			// 計算が完了していたら表示可能

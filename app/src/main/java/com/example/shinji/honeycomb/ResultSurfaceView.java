@@ -15,7 +15,7 @@ import java.util.Locale;
  * Created by shinji on 2017/04/06.
  */
 
-public class ScoreSurfaceView extends SurfaceView implements  Runnable,SurfaceHolder.Callback{
+public class ResultSurfaceView extends SurfaceView implements  Runnable,SurfaceHolder.Callback{
 
 	// 投げて取って下の範囲が囲まれているか？
 	// 爆発
@@ -38,8 +38,11 @@ public class ScoreSurfaceView extends SurfaceView implements  Runnable,SurfaceHo
 	SurfaceHolder surfaceHolder;
 	Thread thread;
 
-	public ScoreSurfaceView(Context context){
+	public ResultSurfaceView(Context context){
 		super(context);
+
+		// フィールド情報の初期化
+		ScoreMng.scoreInit(context);
 
 		surfaceHolder = getHolder();
 		surfaceHolder.addCallback(this);
@@ -66,22 +69,16 @@ public class ScoreSurfaceView extends SurfaceView implements  Runnable,SurfaceHo
 				canvas = surfaceHolder.lockCanvas();
 				canvas.drawRect( 0, 0, screen_width, screen_height, bgPaint);
 
-				if(!scoreFinishFlg){
-					// 基本六角形
-					FieldMng.CountHex(paint, canvas, col_i, row_i);
-				}
-				else{
-					paint.reset();
-					paint.setTextSize(150);
-					paint.setColor(Color.RED);
-					String printText = String.format("WINNER PLAYER%d",win_user_id);
-					float center_x = canvas.getWidth() / 2;
-					float center_y = canvas.getHeight() / 2;
-					canvas.drawText(printText, center_x - paint.measureText(printText) / 2, center_y - ((paint.descent() + paint.ascent()) / 2), paint);
+
+				// 基本六角形
+				FieldMng.CountHex(paint, canvas, col_i, row_i);
+
+				if(scoreFinishFlg){
+					ScoreMng.PrintWinner(paint, canvas, win_user_id);
 				}
 
 				// スコア表示
-				PrintScore(paint, canvas);
+				ScoreMng.PrintScore(paint, canvas);
 
 
 
@@ -109,15 +106,7 @@ public class ScoreSurfaceView extends SurfaceView implements  Runnable,SurfaceHo
 		}
 	}
 
-	public static void PrintScore(Paint paint,Canvas canvas){
-		paint.reset();
-		paint.setTextSize(100);
-		paint.setColor(Color.GREEN);
-		for( int user_i = 0; user_i < PlayerMng.playerNum; user_i++ ){
-			canvas.drawText(String.format(Locale.JAPAN, "PLAYER%d score %d",user_i+1,PlayerMng.players.get(user_i).score ), 0, canvas.getHeight() - ( (PlayerMng.playerNum - user_i - 1) * 100 ) - 5, paint);
-			if((canvas.getHeight() - ( (PlayerMng.playerNum - user_i - 1) * 100 ) - 5) != 2135 && (canvas.getHeight() - ( (PlayerMng.playerNum - user_i - 1) * 100 ) - 5) != 2235 ) Log.w( "AAAAA", "itiiiii " + String.format("%d",canvas.getHeight() - ( (PlayerMng.playerNum - user_i - 1) * 100 ) - 5));
-		}
-	}
+
 
 
 	// 変更時に呼び出される

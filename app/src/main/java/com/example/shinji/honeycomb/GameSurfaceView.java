@@ -102,7 +102,7 @@ public class GameSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					}
 
 					// インテントのインスタンス生成
-					Intent intent = new Intent(getContext(), ScoreActivity.class);
+					Intent intent = new Intent(getContext(), ResultActivity.class);
 					// スコア画面の起動
 					if(!scoreFlg){
 						getContext().startActivity(intent);

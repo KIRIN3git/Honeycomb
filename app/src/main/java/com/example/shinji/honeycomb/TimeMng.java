@@ -14,10 +14,10 @@ import java.util.Locale;
 
 public class TimeMng{
 	// カウントダウンテキストサイズ
-	static float COUNTDONW_TEXT_SIZE_DP = 30.0f;
+	static float COUNTDONW_TEXT_SIZE_DP = 60.0f;
 	static float COUNTDONW_TEXT_SIZE_PX;
 	// リミットテキストサイズ
-	static float LIMIT_TEXT_SIZE_DP = 20.0f;
+	static float LIMIT_TEXT_SIZE_DP = 40.0f;
 	static float LIMIT_TEXT_SIZE_PX;
 
 	// カウントダウン秒
@@ -26,7 +26,7 @@ public class TimeMng{
 	static long countDownMS = countDownS * 1000;
 	//バトル時間秒
 	static int battleS = 60;
-	//	static int battleS = 3;
+	//static int battleS = 10;
 	static long battleMS = battleS * 1000;
 	// カウントダウン開始時間保存
 	static long startCountDownMS;
