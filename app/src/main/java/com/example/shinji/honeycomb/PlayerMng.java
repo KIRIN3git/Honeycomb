@@ -1,5 +1,6 @@
 package com.example.shinji.honeycomb;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -26,42 +27,30 @@ public class PlayerMng{
 	static int playerColorNo[] = {1,2};
 
 	// プレイヤーの半径
-	static int PLAYER_RADIUS;
+	static float PLAYER_RADIUS_DP = 10.0f;
+	static float PLAYER_RADIUS_PX;
+	// 移動マーカーの半径
+	static float DIRECTION_RADIUS_DP = 20.0f;
+	static float DIRECTION_RADIUS_PX;
 
 	// プレイヤーのスピード
 	final static int playerSpeed[] = {10,10};
 
 	static PlayerStatus player;
 
-	// 移動マーカーの半径
-	static int DIRECTION_RADIUS;
+
 
 	// プライヤーデータ
 	public static ArrayList<PlayerStatus> players = new ArrayList<PlayerStatus>();
 
 
 
-	public static void playerInit(){
+	public static void playerInit(Context context){
 
-		// 端末に合わせた各サイズの調整
-		if( MainActivity.real.x >= 1080 ) {
-			// プレイヤーの半径
-			PLAYER_RADIUS = 40;
-			// 移動マーカーの半径
-			DIRECTION_RADIUS = 80;
-		}
-		else if( MainActivity.real.x >= 720 ){
-			// プレイヤーの半径
-			PLAYER_RADIUS = 20;
-			// 移動マーカーの半径
-			DIRECTION_RADIUS = 40;
-		}
-		else{
-			// プレイヤーの半径
-			PLAYER_RADIUS = 20;
-			// 移動マーカーの半径
-			DIRECTION_RADIUS = 40;
-		}
+		// dp→px変換
+		float density = context.getResources().getDisplayMetrics().density;
+		PLAYER_RADIUS_PX = CommonMng.PxToDp(PLAYER_RADIUS_DP,density);
+		DIRECTION_RADIUS_PX = CommonMng.PxToDp(DIRECTION_RADIUS_DP,density);
 
 		players.clear();
 		for( int i = 0; i < playerNum; i++ ){
@@ -85,8 +74,8 @@ public class PlayerMng{
 		for( int i = 0; i < playerNum; i++ ){
 			paint.setColor(Color.argb(255, PlayerMng.players.get(i).r, PlayerMng.players.get(i).g, PlayerMng.players.get(i).b));
 			// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
-			canvas.drawCircle(center_x - PlayerMng.players.get(i).now_position_x, center_y - PlayerMng.players.get(i).now_position_y, PLAYER_RADIUS, paint);
-//			canvas.drawCircle(0,0, PLAYER_RADIUS, paint);
+			canvas.drawCircle(center_x - PlayerMng.players.get(i).now_position_x, center_y - PlayerMng.players.get(i).now_position_y, PLAYER_RADIUS_PX, paint);
+//			canvas.drawCircle(0,0, PLAYER_RADIUS_PX, paint);
 
 		}
 	}
@@ -108,7 +97,7 @@ public class PlayerMng{
 			paint.setStrokeWidth(20);
 			paint.setStyle(Paint.Style.STROKE);
 			paint.setAntiAlias(true);
-			canvas.drawCircle(start_touch_x, start_touch_y, DIRECTION_RADIUS, paint);
+			canvas.drawCircle(start_touch_x, start_touch_y, DIRECTION_RADIUS_PX, paint);
 
 			// セーブタップ位置を中心にタップ〇移動範囲を表示
 			paint.reset();
@@ -116,7 +105,7 @@ public class PlayerMng{
 			paint.setStrokeWidth(20);
 			paint.setStyle(Paint.Style.STROKE);
 			paint.setAntiAlias(true);
-			canvas.drawCircle(start_touch_x, start_touch_y, DIRECTION_RADIUS * 3, paint);
+			canvas.drawCircle(start_touch_x, start_touch_y, DIRECTION_RADIUS_PX * 3, paint);
 
 			// 移動方向に〇を表示
 			paint.reset();
@@ -126,7 +115,7 @@ public class PlayerMng{
 			paint.setAntiAlias(true);
 			// 計算が完了していたら表示可能
 			if( indicatorXY[0] != 0 && indicatorXY[1] != 0){
-				canvas.drawCircle(indicatorXY[0], indicatorXY[1], DIRECTION_RADIUS, paint);
+				canvas.drawCircle(indicatorXY[0], indicatorXY[1], DIRECTION_RADIUS_PX, paint);
 			}
 		}
 
@@ -181,9 +170,9 @@ public class PlayerMng{
 		//Log.w( "DEBUG_DATA", "sa_y " + sa_y  );
 
 		// 三平方の定理で絶対値差分と表示位置の比率を取得
-		ratio = sqrt( pow(DIRECTION_RADIUS * 2,2) / ( pow(sa_x,2) + pow(sa_y,2) ) );
+		ratio = sqrt( pow(DIRECTION_RADIUS_PX * 2,2) / ( pow(sa_x,2) + pow(sa_y,2) ) );
 
-		//Log.w( "DEBUG_DATA", "pow(160,2) " + pow(DIRECTION_RADIUS * 2,2)  );
+		//Log.w( "DEBUG_DATA", "pow(160,2) " + pow(DIRECTION_RADIUS_PX * 2,2)  );
 		//Log.w( "DEBUG_DATA", "pow(sa_x,2) " + pow(sa_x,2) );
 		//Log.w( "DEBUG_DATA", "pow(sa_y,2) " + pow(sa_y,2) );
 		//Log.w( "DEBUG_DATA", "ratio " + ratio  );

@@ -1,5 +1,6 @@
 package com.example.shinji.honeycomb;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,6 +13,18 @@ import android.util.Log;
 
 public class FieldMng{
 
+
+	// 六角形の半径の長さ
+	static float HEX_LENGTH_DP = 15.0f;
+	static float HEX_LENGTH_PX;
+
+	// 六角形の線の太さ
+	static float HEX_WIDHT_DP = 1.0f;
+	static float HEX_WIDHT_PX;
+
+	// 六角形の一辺の長さの比率
+	static float HEX_RATIO = 0.86f;
+
 	// 六角形の縦、横の数
 	final static int HEX_NUM_ROW = 15;
 	final static int HEX_NUM_COL = 16;
@@ -23,32 +36,10 @@ public class FieldMng{
 	static boolean countHitFlg = false;
 
 
+
+
 	// 六角形の塗りつぶし確認
 	static int hex_color_num[][];
-
-//	int hex_color_num[][] = {
-//			{8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
-//			{8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8}
-//	};
 
 	static int hex_color_rgb[][] = {
 			{255,255,255},
@@ -66,16 +57,13 @@ public class FieldMng{
 	};
 
 
-	// 六角形の半径の長さ
-	static float HEX_LENGTH = 50.0f;
 
-	// 六角形の線の太さ
-	static float HEX_WIDHT;
+	public static void fieldInit(Context context){
 
-	// 六角形の一辺の長さの比率
-	static float HEX_RATIO;
-
-	public static void fieldInit(){
+		// dp→px変換
+		float density = context.getResources().getDisplayMetrics().density;
+		HEX_LENGTH_PX = CommonMng.PxToDp(HEX_LENGTH_DP,density);
+		HEX_WIDHT_PX = CommonMng.PxToDp(HEX_WIDHT_DP,density);
 
 		hex_color_num = new int[][]{
 				{8,8,8,8,8,8,8,8,8,8,8,8,8,8,8},
@@ -116,31 +104,6 @@ public class FieldMng{
 //				{8,8,8,8,8,8,8,8,8,8,8,8,8,8,8}
 //		};
 
-		// 端末に合わせた各サイズの調整
-		if( MainActivity.real.x >= 1080 ) {
-			// 六角形の半径の長さ
-			HEX_LENGTH = 50.0f;
-			// 六角形の線の太さ
-			HEX_WIDHT = 5.0f;
-			// 六角形の一辺の長さの比率
-			HEX_RATIO = 0.86f;
-		}
-		else if( MainActivity.real.x >= 720 ){
-			// 六角形の半径の長さ
-			HEX_LENGTH = 25.0f;
-			// 六角形の線の太さ/2
-			HEX_WIDHT = 5.0f;
-			// 六角形の一辺の長さの比率
-			HEX_RATIO = 0.86f;
-		}
-		else{
-			// 六角形の半径の長さ
-			HEX_LENGTH = 50.0f;
-			// 六角形の線の太さ
-			HEX_WIDHT = 10.0f;
-			// 六角形の一辺の長さの比率
-			HEX_RATIO = 0.86f;
-		}
 	}
 
 	public static void DrawHex(Paint paint, Canvas canvas){
@@ -154,23 +117,23 @@ public class FieldMng{
 		Path path = new Path();
 
 		paint.reset();
-		paint.setStrokeWidth(HEX_WIDHT);
+		paint.setStrokeWidth(HEX_WIDHT_PX);
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 		for( int col_i = 0; col_i < HEX_NUM_COL; col_i++ ){
 			for( int row_i = 0; row_i < HEX_NUM_ROW; row_i++ ){
 
 				// 移動分
 				// row_i - ( HEX_NUM / 2 ),col_i - ( HEX_NUM / 2 ) は左右対称にするため
-				add_x = HEX_LENGTH * (3.0f/2.0f) * (float)(row_i - ( HEX_NUM_ROW / 2 ));
-				if( (row_i - ( HEX_NUM_ROW / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 ));
-				else  add_y = HEX_LENGTH * HEX_RATIO + ( (HEX_LENGTH * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 )));
+				add_x = HEX_LENGTH_PX * (3.0f/2.0f) * (float)(row_i - ( HEX_NUM_ROW / 2 ));
+				if( (row_i - ( HEX_NUM_ROW / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH_PX * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 ));
+				else  add_y = HEX_LENGTH_PX * HEX_RATIO + ( (HEX_LENGTH_PX * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 )));
 //				Log.w( "LOG1", "col_i[" + col_i + "] add_x[" + add_x + "]");
 //				Log.w( "LOG1", "row_i[" + row_i + "] add_y[" + add_y + "]");
 
 				// すでにペイント済み、枠内に中心点が入ったら
 				// 一旦、円で計算
 				for( int i = 0; i < PlayerMng.playerNum; i++ ){
-					if( ((add_x + PlayerMng.players.get(i).now_position_x) * (add_x + PlayerMng.players.get(i).now_position_x) + (add_y + PlayerMng.players.get(i).now_position_y) * (add_y + PlayerMng.players.get(i).now_position_y)) < Math.pow(HEX_LENGTH, 2) ){
+					if( ((add_x + PlayerMng.players.get(i).now_position_x) * (add_x + PlayerMng.players.get(i).now_position_x) + (add_y + PlayerMng.players.get(i).now_position_y) * (add_y + PlayerMng.players.get(i).now_position_y)) < Math.pow(HEX_LENGTH_PX, 2) ){
 						// 壁にぶつかったら
 						if( hex_color_num[col_i][row_i] == WALL_NO ){
 							PlayerMng.players.get(i).now_position_x = 0;
@@ -196,17 +159,17 @@ public class FieldMng{
 				paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[col_i][row_i]][0], hex_color_rgb[hex_color_num[col_i][row_i]][1], hex_color_rgb[hex_color_num[col_i][row_i]][2]));
 				path.reset();
 				// 右
-				path.moveTo(center_x + HEX_LENGTH - HEX_WIDHT + add_x, center_y + add_y);
+				path.moveTo(center_x + HEX_LENGTH_PX - HEX_WIDHT_PX + add_x, center_y + add_y);
 				// 右下
-				path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y);
+				path.lineTo(center_x + (HEX_LENGTH_PX / 2) - (HEX_WIDHT_PX / 2) + add_x, center_y + (HEX_LENGTH_PX * HEX_RATIO) - (HEX_WIDHT_PX * HEX_RATIO) + add_y);
 				// 左下
-				path.lineTo(center_x - (HEX_LENGTH / 2) + (HEX_WIDHT / 2) + add_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y);
+				path.lineTo(center_x - (HEX_LENGTH_PX / 2) + (HEX_WIDHT_PX / 2) + add_x, center_y + (HEX_LENGTH_PX * HEX_RATIO) - (HEX_WIDHT_PX * HEX_RATIO) + add_y);
 				// 左
-				path.lineTo(center_x - HEX_LENGTH + HEX_WIDHT + add_x, center_y + add_y);
+				path.lineTo(center_x - HEX_LENGTH_PX + HEX_WIDHT_PX + add_x, center_y + add_y);
 				// 左上
-				path.lineTo(center_x - (HEX_LENGTH / 2) + (HEX_WIDHT / 2) + add_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y);
+				path.lineTo(center_x - (HEX_LENGTH_PX / 2) + (HEX_WIDHT_PX / 2) + add_x, center_y - (HEX_LENGTH_PX * HEX_RATIO) + (HEX_WIDHT_PX * HEX_RATIO) + add_y);
 				// 右上
-				path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y);
+				path.lineTo(center_x + (HEX_LENGTH_PX / 2) - (HEX_WIDHT_PX / 2) + add_x, center_y - (HEX_LENGTH_PX * HEX_RATIO) + (HEX_WIDHT_PX * HEX_RATIO) + add_y);
 				path.close();
 				canvas.drawPath(path, paint);
 
@@ -226,7 +189,7 @@ public class FieldMng{
 		Path path = new Path();
 
 		paint.reset();
-		paint.setStrokeWidth(HEX_WIDHT);
+		paint.setStrokeWidth(HEX_WIDHT_PX);
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 		for( int col_i = 0; col_i < HEX_NUM_COL; col_i++ ){
 			for( int row_i = 0; row_i < HEX_NUM_ROW; row_i++ ){
@@ -244,9 +207,9 @@ public class FieldMng{
 
 				// 移動分
 				// row_i - ( HEX_NUM / 2 ),col_i - ( HEX_NUM / 2 ) は左右対称にするため
-				add_x = HEX_LENGTH * (3.0f/2.0f) * (float)(row_i - ( HEX_NUM_ROW / 2 ));
-				if( (row_i - ( HEX_NUM_ROW / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 ));
-				else  add_y = HEX_LENGTH * HEX_RATIO + ( (HEX_LENGTH * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 )));
+				add_x = HEX_LENGTH_PX * (3.0f/2.0f) * (float)(row_i - ( HEX_NUM_ROW / 2 ));
+				if( (row_i - ( HEX_NUM_ROW / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH_PX * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 ));
+				else  add_y = HEX_LENGTH_PX * HEX_RATIO + ( (HEX_LENGTH_PX * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 )));
 //				Log.w( "LOG1", "col_i[" + col_i + "] add_x[" + add_x + "]");
 //				Log.w( "LOG1", "row_i[" + row_i + "] add_y[" + add_y + "]");
 
@@ -258,17 +221,17 @@ public class FieldMng{
 				path.reset();
 
 				// 右
-				path.moveTo(center_x + HEX_LENGTH - HEX_WIDHT + add_x, center_y + add_y);
+				path.moveTo(center_x + HEX_LENGTH_PX - HEX_WIDHT_PX + add_x, center_y + add_y);
 				// 右下
-				path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y);
+				path.lineTo(center_x + (HEX_LENGTH_PX / 2) - (HEX_WIDHT_PX / 2) + add_x, center_y + (HEX_LENGTH_PX * HEX_RATIO) - (HEX_WIDHT_PX * HEX_RATIO) + add_y);
 				// 左下
-				path.lineTo(center_x - (HEX_LENGTH / 2) + (HEX_WIDHT / 2) + add_x, center_y + (HEX_LENGTH * HEX_RATIO) - (HEX_WIDHT * HEX_RATIO) + add_y);
+				path.lineTo(center_x - (HEX_LENGTH_PX / 2) + (HEX_WIDHT_PX / 2) + add_x, center_y + (HEX_LENGTH_PX * HEX_RATIO) - (HEX_WIDHT_PX * HEX_RATIO) + add_y);
 				// 左
-				path.lineTo(center_x - HEX_LENGTH + HEX_WIDHT + add_x, center_y + add_y);
+				path.lineTo(center_x - HEX_LENGTH_PX + HEX_WIDHT_PX + add_x, center_y + add_y);
 				// 左上
-				path.lineTo(center_x - (HEX_LENGTH / 2) + (HEX_WIDHT / 2) + add_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y);
+				path.lineTo(center_x - (HEX_LENGTH_PX / 2) + (HEX_WIDHT_PX / 2) + add_x, center_y - (HEX_LENGTH_PX * HEX_RATIO) + (HEX_WIDHT_PX * HEX_RATIO) + add_y);
 				// 右上
-				path.lineTo(center_x + (HEX_LENGTH / 2) - (HEX_WIDHT / 2) + add_x, center_y - (HEX_LENGTH * HEX_RATIO) + (HEX_WIDHT * HEX_RATIO) + add_y);
+				path.lineTo(center_x + (HEX_LENGTH_PX / 2) - (HEX_WIDHT_PX / 2) + add_x, center_y - (HEX_LENGTH_PX * HEX_RATIO) + (HEX_WIDHT_PX * HEX_RATIO) + add_y);
 				path.close();
 				canvas.drawPath(path, paint);
 			}

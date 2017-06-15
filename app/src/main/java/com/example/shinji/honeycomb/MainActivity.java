@@ -16,6 +16,7 @@ public class MainActivity extends AppCompatActivity{
 
 	public static Point real;
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);

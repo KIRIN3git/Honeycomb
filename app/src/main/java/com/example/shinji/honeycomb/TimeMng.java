@@ -1,5 +1,6 @@
 package com.example.shinji.honeycomb;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,9 +14,11 @@ import java.util.Locale;
 
 public class TimeMng{
 	// カウントダウンテキストサイズ
-	static int COUNTDONW_TEXT_SIZE;
+	static float COUNTDONW_TEXT_SIZE_DP = 30.0f;
+	static float COUNTDONW_TEXT_SIZE_PX;
 	// リミットテキストサイズ
-	static int LIMIT_TEXT_SIZE;
+	static float LIMIT_TEXT_SIZE_DP = 20.0f;
+	static float LIMIT_TEXT_SIZE_PX;
 
 	// カウントダウン秒
 	static int countDownS = 3;
@@ -45,27 +48,13 @@ public class TimeMng{
 	static long fpsMsec = 1000/ fps;
 	static String printText = "";
 
-	public static void timeInit(){
-		// 端末に合わせた各サイズの調整
-		if( MainActivity.real.x >= 1080 ) {
-			// カウントダウンテキストサイズ
-			COUNTDONW_TEXT_SIZE = 200;
-			//リミット時間テキストサイズ
-			LIMIT_TEXT_SIZE = 200;
-		}
-		else if( MainActivity.real.x >= 720 ){
+	public static void timeInit(Context context){
+		// dp→px変換
+		float density = context.getResources().getDisplayMetrics().density;
+		COUNTDONW_TEXT_SIZE_PX = CommonMng.PxToDp(COUNTDONW_TEXT_SIZE_DP,density);
+		LIMIT_TEXT_SIZE_PX = CommonMng.PxToDp(LIMIT_TEXT_SIZE_DP,density);
 
-			// カウントダウンテキストサイズ
-			COUNTDONW_TEXT_SIZE = 50;
-			//リミット時間テキストサイズ
-			LIMIT_TEXT_SIZE = 50;
-		}
-		else{
-			// カウントダウンテキストサイズ
-			COUNTDONW_TEXT_SIZE = 50;
-			//リミット時間テキストサイズ
-			LIMIT_TEXT_SIZE = 50;
-		}
+
 		countDownFlg = true;
 		startCountDownMS = System.currentTimeMillis();
 
@@ -77,7 +66,7 @@ public class TimeMng{
 		long StartMillis = System.currentTimeMillis() - startCountDownMS;
 
 		paint.reset();
-		paint.setTextSize(COUNTDONW_TEXT_SIZE);
+		paint.setTextSize(COUNTDONW_TEXT_SIZE_PX);
 		paint.setColor(Color.RED);
 
 		Log.w( "AAAAAlllleew", "aaa1 " + String.valueOf(countDownMS - StartMillis));
@@ -111,7 +100,7 @@ public class TimeMng{
 		if( ( battleMS - (System.currentTimeMillis() - startBattleMS) ) < 0 ) timeOverFlg = true;
 
 		paint.reset();
-		paint.setTextSize(LIMIT_TEXT_SIZE);
+		paint.setTextSize(LIMIT_TEXT_SIZE_PX);
 		paint.setColor(Color.RED);
 		if( !timeOverFlg ) canvas.drawText(String.format(Locale.JAPAN, "%02d", ss), 0, canvas.getHeight(), paint);
 		else{

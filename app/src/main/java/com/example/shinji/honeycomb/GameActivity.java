@@ -14,5 +14,6 @@ public class GameActivity extends AppCompatActivity{
 		surfaceView = new GameSurfaceView(this);
 		setContentView(surfaceView);
 
+
 	}
 }
