@@ -21,6 +21,9 @@ public class ScoreMng{
 	static float SCORE_MSG_DP = 20.0f;
 	static float SCORE_MSG_PX;
 
+	static String printText = "";
+	static float printX,printY;
+
 	public static void scoreInit(Context context){
 
 		// dp→px変換
@@ -35,7 +38,11 @@ public class ScoreMng{
 		paint.setTextSize(SCORE_MSG_PX);
 		paint.setColor(Color.BLUE);
 		for( int user_i = 0; user_i < PlayerMng.playerNum; user_i++ ){
-			canvas.drawText(String.format(Locale.JAPAN, "PLAYER%d score %d",user_i+1,PlayerMng.players.get(user_i).score ), 0, canvas.getHeight() - ( (PlayerMng.playerNum - user_i - 1) * SCORE_MSG_PX ) - 5, paint);
+			printText = String.format(Locale.JAPAN, "PLAYER%d score %d",user_i+1,PlayerMng.players.get(user_i).score );
+			printX = paint.measureText(printText) / 2;
+			printY = canvas.getHeight()  + ((paint.descent() + paint.ascent()) / 2) - ( (PlayerMng.playerNum - user_i - 1) * SCORE_MSG_PX ) -5;
+
+			CommonMng.MirrorDrowText(canvas,paint,printX,printY,printText);
 		}
 	}
 
@@ -44,8 +51,8 @@ public class ScoreMng{
 		paint.setTextSize(WINNER_MSG_PX);
 		paint.setColor(Color.RED);
 		String printText = String.format("WINNER PLAYER%d",win_user_id);
-		float center_x = canvas.getWidth() / 2;
-		float center_y = canvas.getHeight() / 2;
-		canvas.drawText(printText, center_x - paint.measureText(printText) / 2, center_y - ((paint.descent() + paint.ascent()) / 2), paint);
+		printX = canvas.getWidth() / 2;
+		printY = canvas.getHeight() * 3 / 4;
+		CommonMng.MirrorDrowText(canvas,paint,printX,printY,printText);
 	}
 }
