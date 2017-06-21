@@ -47,10 +47,12 @@ public class ScoreMng{
 	}
 
 	public static void PrintWinner(Paint paint, Canvas canvas, int win_user_id){
+		String printText;
 		paint.reset();
 		paint.setTextSize(WINNER_MSG_PX);
 		paint.setColor(Color.RED);
-		String printText = String.format("WINNER PLAYER%d",win_user_id);
+		if( win_user_id == 99 ) printText = String.format("DRAW");
+		else printText = String.format("WINNER PLAYER%d",win_user_id);
 		printX = canvas.getWidth() / 2;
 		printY = canvas.getHeight() * 3 / 4;
 		CommonMng.MirrorDrowText(canvas,paint,printX,printY,printText);

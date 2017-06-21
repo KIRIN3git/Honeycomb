@@ -205,7 +205,10 @@ public class PlayerMng{
 		int win_user_id = -1;
 		int win_score = -1;
 		for( int i = 0; i < playerNum; i++ ){
-			if( players.get(i).score > win_score ){
+			if( win_score == players.get(i).score ){
+				win_user_id = 99; //ドロー
+			}
+			else if( players.get(i).score > win_score ){
 				win_user_id = playerColorNo[i];
 				win_score = players.get(i).score;
 			}

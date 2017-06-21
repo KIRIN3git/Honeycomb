@@ -65,7 +65,8 @@ public class FieldMng{
 		HEX_LENGTH_PX = CommonMng.PxToDp(HEX_LENGTH_DP,density);
 		HEX_WIDHT_PX = CommonMng.PxToDp(HEX_WIDHT_DP,density);
 
-		//六角形
+
+		//六角形1
 		hex_color_num = new int[][]{
 				{9,9,9,9,9,9,8,8,8,9,9,9,9,9,9},
 				{9,9,9,9,8,8,0,0,0,8,8,9,9,9,9},
@@ -147,8 +148,6 @@ public class FieldMng{
 				add_x = HEX_LENGTH_PX * (3.0f/2.0f) * (float)(row_i - ( HEX_NUM_ROW / 2 ));
 				if( (row_i - ( HEX_NUM_ROW / 2 )) % 2  == 0 ) add_y = (HEX_LENGTH_PX * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 ));
 				else  add_y = HEX_LENGTH_PX * HEX_RATIO + ( (HEX_LENGTH_PX * HEX_RATIO) * 2 * (col_i - ( HEX_NUM_COL / 2 )));
-//				Log.w( "LOG1", "col_i[" + col_i + "] add_x[" + add_x + "]");
-//				Log.w( "LOG1", "row_i[" + row_i + "] add_y[" + add_y + "]");
 
 				// すでにペイント済み、枠内に中心点が入ったら
 				// 一旦、円で計算
