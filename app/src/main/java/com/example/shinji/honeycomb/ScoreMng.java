@@ -21,6 +21,9 @@ public class ScoreMng{
 	static float SCORE_MSG_DP = 20.0f;
 	static float SCORE_MSG_PX;
 
+	// スコアカウントFPS
+	final static int SCORE_FPS = 20;
+
 	static String printText = "";
 	static float printX,printY;
 

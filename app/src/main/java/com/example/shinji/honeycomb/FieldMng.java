@@ -219,7 +219,7 @@ public class FieldMng{
 							hex_color_num[col_i][row_i] = COUNT_NO;
 							countHitFlg = true;
 							PlayerMng.players.get(user_i).score++;
-							TimeMng.setFps(10);
+							TimeMng.setFps(ScoreMng.SCORE_FPS);
 						}
 					}
 				}

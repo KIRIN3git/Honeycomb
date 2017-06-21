@@ -21,12 +21,12 @@ public class TimeMng{
 	static float LIMIT_TEXT_SIZE_PX;
 
 	// カウントダウン秒
-//	static int countDownS = 3;
-	static int countDownS = 1;
+	static int countDownS = 3;
+	//	static int countDownS = 1;
 	static long countDownMS = countDownS * 1000;
 	//バトル時間秒
-	//static int battleS = 60;
-	static int battleS = 1;
+	static int battleS = 60;
+	//static int battleS = 1;
 	static long battleMS = battleS * 1000;
 	// カウントダウン開始時間保存
 	static long startCountDownMS;
