@@ -13,7 +13,6 @@ import android.util.Log;
 
 public class FieldMng{
 
-
 	// 六角形の半径の長さ
 //	static float HEX_LENGTH_DP = 15.0f;
 	static float HEX_LENGTH_DP = 12.0f;
@@ -41,9 +40,6 @@ public class FieldMng{
 	// 六角形の塗りつぶし確認
 	static int hex_color_num[][];
 
-
-
-
 	static int hex_color_rgb[][] = {
 			{255,255,255},
 			{127 ,255 ,127}, //黄緑
@@ -67,7 +63,6 @@ public class FieldMng{
 		float density = context.getResources().getDisplayMetrics().density;
 		HEX_LENGTH_PX = CommonMng.PxToDp(HEX_LENGTH_DP,density);
 		HEX_WIDHT_PX = CommonMng.PxToDp(HEX_WIDHT_DP,density);
-
 
 		//六角形1 19 20
 		hex_color_num = new int[][]{
