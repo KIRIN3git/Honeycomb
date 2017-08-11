@@ -95,7 +95,6 @@ public class GameSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					TimeMng.drawLimitTime(paint, canvas);
 				}
 				else if( TimeMng.gameOverFlg) {
-					Log.w( "AAAAA", "AAAAAEEEEEWWWWWWWWEEEE0");
 					try {
 						Thread.sleep(2000);
 					} catch (InterruptedException e) {

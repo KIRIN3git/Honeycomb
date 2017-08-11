@@ -22,11 +22,11 @@ public class TimeMng{
 
 	// カウントダウン秒
 	static int countDownS = 3;
-//	static int countDownS = 1;
+	//	static int countDownS = 1;
 	static long countDownMS = countDownS * 1000;
 	//バトル時間秒
 	static int battleS = 60;
-	//static int battleS = 10;
+	//static int battleS = 1;
 	static long battleMS = battleS * 1000;
 	// カウントダウン開始時間保存
 	static long startCountDownMS;
@@ -47,6 +47,7 @@ public class TimeMng{
 	static long fps = FPS_DEFO;
 	static long fpsMsec = 1000/ fps;
 	static String printText = "";
+	static float printX,printY;
 
 	public static void timeInit(Context context){
 		// dp→px変換
@@ -69,9 +70,6 @@ public class TimeMng{
 		paint.setTextSize(COUNTDONW_TEXT_SIZE_PX);
 		paint.setColor(Color.RED);
 
-		Log.w( "AAAAAlllleew", "aaa1 " + String.valueOf(countDownMS - StartMillis));
-		Log.w( "AAAAAlllleew", "aaa2 " + String.valueOf(battleFlg));
-
 		if( countDownMS - StartMillis > 0 ){
 			printText = String.valueOf( ( (countDownMS - StartMillis) / 1000 ) + 1 );
 		}
@@ -84,16 +82,15 @@ public class TimeMng{
 			startBattleMS = System.currentTimeMillis();
 		}
 		if( countDownFlg ){
-			// Canvas 中心点
-			float center_x = canvas.getWidth() / 2;
-			float center_y = canvas.getHeight() / 2;
-			canvas.drawText(printText, center_x - paint.measureText(printText) / 2, center_y - ((paint.descent() + paint.ascent()) / 2), paint);
+			printX = canvas.getWidth() / 2;
+			printY = canvas.getHeight() * 3 / 4;
+			// 反転表示
+			CommonMng.MirrorDrowText(canvas,paint,printX,printY,printText);
 		}
 	}
 
 	public static void drawLimitTime(Paint paint, Canvas canvas){
 		boolean timeOverFlg = false;
-
 		long ss = ( ( battleMS - (System.currentTimeMillis() - startBattleMS) ) / 1000 ) + 1;
 		long ms = ( battleMS - (System.currentTimeMillis() - startBattleMS) ) - ( ss * 1000 ) + 1000;
 
@@ -102,14 +99,20 @@ public class TimeMng{
 		paint.reset();
 		paint.setTextSize(LIMIT_TEXT_SIZE_PX);
 		paint.setColor(Color.RED);
-		if( !timeOverFlg ) canvas.drawText(String.format(Locale.JAPAN, "%02d", ss), 0, canvas.getHeight(), paint);
+		if( !timeOverFlg ){
+			// 反転表示
+			printText = String.format(Locale.JAPAN, "%02d", ss);
+			printX = paint.measureText(printText) / 2;
+			printY = canvas.getHeight()  + ((paint.descent() + paint.ascent()) / 2);
+			CommonMng.MirrorDrowText(canvas,paint,printX,printY,printText);
+		}
 		else{
 //			canvas.drawText("STOP", 0, canvas.getHeight(), paint);
 			printText = "試合終了";
 			// Canvas 中心点
-			float center_x = canvas.getWidth() / 2;
-			float center_y = canvas.getHeight() / 2;
-			canvas.drawText(printText, center_x - paint.measureText(printText) / 2, center_y - ((paint.descent() + paint.ascent()) / 2), paint);
+			printX = canvas.getWidth() / 2;
+			printY = canvas.getHeight() * 3 / 4;
+			CommonMng.MirrorDrowText(canvas,paint,printX,printY,printText);
 
 			// 試合終了
 			battleFlg = false;
