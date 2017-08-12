@@ -61,6 +61,20 @@ public class ResultSurfaceView extends SurfaceView implements  Runnable,SurfaceH
 		Paint bgPaint = new Paint();
 		bgPaint.setColor(Color.argb(255, BACK_R, BACK_G, BACK_B));
 
+		// ノックアウト判定
+		int countCrearNum = 0;
+		for( int i = 0; i < PlayerMng.playerNum; i++ ) {
+
+			if( PlayerMng.players.get(i).status != 2 ){
+				countCrearNum++;
+				win_user_id = PlayerMng.playerColorNo[i];
+			}
+		}
+		if( countCrearNum == 1 ){
+			scoreFinishFlg = true;
+		}
+
+
 		while(thread != null){
 			try{
 
@@ -68,6 +82,7 @@ public class ResultSurfaceView extends SurfaceView implements  Runnable,SurfaceH
 
 				canvas = surfaceHolder.lockCanvas();
 				canvas.drawRect( 0, 0, screen_width, screen_height, bgPaint);
+
 
 
 				// 基本六角形
@@ -85,18 +100,20 @@ public class ResultSurfaceView extends SurfaceView implements  Runnable,SurfaceH
 				// 描画
 				surfaceHolder.unlockCanvasAndPost(canvas);
 
-				// 評価HEX変更
-				col_i++;
-				if(col_i == FieldMng.HEX_NUM_COL){
-					row_i++;
-					col_i=0;
-				}
-				if(row_i == FieldMng.HEX_NUM_ROW){
-					col_i = -1;
-					row_i = -1;
-					scoreFinishFlg = true;
+				if( !scoreFinishFlg ) {
+					// 評価HEX変更
+					col_i++;
+					if (col_i == FieldMng.HEX_NUM_COL) {
+						row_i++;
+						col_i = 0;
+					}
+					if (row_i == FieldMng.HEX_NUM_ROW) {
+						col_i = -1;
+						row_i = -1;
+						scoreFinishFlg = true;
 
-					win_user_id = PlayerMng.checkWinner();
+						win_user_id = PlayerMng.checkWinner();
+					}
 				}
 
 				// fps

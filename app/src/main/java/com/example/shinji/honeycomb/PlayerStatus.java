@@ -12,6 +12,11 @@ public class PlayerStatus{
 	int now_position_x,now_position_y;
 	// プレイヤーカラー
 	int r,g,b;
+	// プレイヤーの状態
+	// 0:通常,1:相手に侵入中,2:死亡
+	int status = 0;
+
+
 	// タッチの開始位置
 	int start_touch_x,start_touch_y;
 	// タッチの現在位置
@@ -38,9 +43,12 @@ public class PlayerStatus{
 		score = 0;
 
 		if( color_no == 1 ){
-			r = 50;
-			g = 205;
-			b = 50;
+//			r = 50;
+//			g = 205;
+//			b = 50;
+			r = 255;
+			g = 127;
+			b = 127;
 		}
 		else if( color_no == 2 ){
 			r = 127;

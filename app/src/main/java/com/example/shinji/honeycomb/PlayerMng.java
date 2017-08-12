@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -75,12 +76,30 @@ public class PlayerMng{
 //		paint.setColor(Color.argb(255, PlayerMng.players.get(1).r, PlayerMng.players.get(1).g, PlayerMng.players.get(1).b));
 //		canvas.drawCircle(0,0, 800, paint);
 
-		for( int i = 0; i < playerNum; i++ ){
+		for( int i = 0; i < playerNum; i++ ) {
 			paint.setColor(Color.argb(255, PlayerMng.players.get(i).r, PlayerMng.players.get(i).g, PlayerMng.players.get(i).b));
 			// (x1,y1,r,paint) 中心x1座標, 中心y1座標, r半径
 			canvas.drawCircle(center_x - PlayerMng.players.get(i).now_position_x, center_y - PlayerMng.players.get(i).now_position_y, PLAYER_RADIUS_PX, paint);
 //			canvas.drawCircle(0,0, PLAYER_RADIUS_PX, paint);
 
+			for (int j = 0; j < playerNum; j++) {
+				if (i == j) continue;
+				if( ((PlayerMng.players.get(i).now_position_x - PlayerMng.players.get(j).now_position_x) * (PlayerMng.players.get(i).now_position_x - PlayerMng.players.get(j).now_position_x)
+						+ (PlayerMng.players.get(i).now_position_y - PlayerMng.players.get(j).now_position_y) * (PlayerMng.players.get(i).now_position_y - PlayerMng.players.get(j).now_position_y)) < Math.pow(PLAYER_RADIUS_PX * 2, 2) ){
+
+					Log.w( "DEBUG_DATA", "円重なり");
+					// もし侵入中だったら
+					if( PlayerMng.players.get(i).status == 1 && PlayerMng.players.get(j).status == 0){
+						Log.w( "DEBUG_DATA", "死亡" + TimeMng.gameOverFlg );
+							// 死亡
+						TimeMng.gameOverFlg = true;
+						TimeMng.battleFlg = false;
+						PlayerMng.players.get(i).status = 2;
+						return;
+					}
+				}
+
+			}
 		}
 	}
 

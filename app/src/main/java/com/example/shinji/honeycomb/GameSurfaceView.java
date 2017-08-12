@@ -81,7 +81,6 @@ public class GameSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 				// プレイヤーの表示
 				PlayerMng.DrawPlayer(paint, canvas);
-
 				// カウントダウン中
 				if( TimeMng.countDownFlg ){
 					// 開始カウントダウンの表示
@@ -94,7 +93,7 @@ public class GameSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					// リミット時間の表示
 					TimeMng.drawLimitTime(paint, canvas);
 				}
-				else if( TimeMng.gameOverFlg) {
+				else if( TimeMng.gameOverFlg ) {
 					try {
 						Thread.sleep(2000);
 					} catch (InterruptedException e) {
@@ -104,6 +103,7 @@ public class GameSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 					Intent intent = new Intent(getContext(), ResultActivity.class);
 					// スコア画面の起動
 					if(!scoreFlg){
+						Log.w( "DEBUG_DATA", "gameOverFlg2");
 						getContext().startActivity(intent);
 						scoreFlg = true;
 					}

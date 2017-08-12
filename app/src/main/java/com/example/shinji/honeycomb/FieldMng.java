@@ -14,7 +14,6 @@ import android.util.Log;
 public class FieldMng{
 
 	// 六角形の半径の長さ
-//	static float HEX_LENGTH_DP = 15.0f;
 	static float HEX_LENGTH_DP = 12.0f;
 	static float HEX_LENGTH_PX;
 
@@ -31,6 +30,11 @@ public class FieldMng{
 	final static int HEX_NUM_ROW = 19;
 	final static int HEX_NUM_COL = 20;
 
+	// 四角形の半径の長さ
+	static float TET_LENGTH_DP = 5.0f;
+	static float TET_LENGTH_PX;
+
+	final static int CLEAN_NO = 0; // 白
 	final static int COUNT_NO = 7;
 	final static int WALL_NO = 8;
 	final static int DALETE_NO = 9;
@@ -38,12 +42,13 @@ public class FieldMng{
 	static boolean countHitFlg = false;
 
 	// 六角形の塗りつぶし確認
+	// ２桁の場合は1桁目が奪おうとするNO,１桁目が奪われようとしているNO
 	static int hex_color_num[][];
 
 	static int hex_color_rgb[][] = {
 			{255,255,255},
-			{127 ,255 ,127}, //黄緑
-//		{255 ,193 ,255}, //ピンク
+//			{127 ,255 ,127}, //黄緑
+			{255 ,193 ,255}, //ピンク
 //		{255 ,188 ,188}, //薄赤
 			{127 ,255 ,255},//水色
 			{129 ,129 ,129},
@@ -63,6 +68,7 @@ public class FieldMng{
 		float density = context.getResources().getDisplayMetrics().density;
 		HEX_LENGTH_PX = CommonMng.PxToDp(HEX_LENGTH_DP,density);
 		HEX_WIDHT_PX = CommonMng.PxToDp(HEX_WIDHT_DP,density);
+		TET_LENGTH_PX = CommonMng.PxToDp(TET_LENGTH_DP,density);
 
 		//六角形1 19 20
 		hex_color_num = new int[][]{
@@ -209,20 +215,58 @@ public class FieldMng{
 				// 一旦、円で計算
 				for( int i = 0; i < PlayerMng.playerNum; i++ ){
 					if( ((add_x + PlayerMng.players.get(i).now_position_x) * (add_x + PlayerMng.players.get(i).now_position_x) + (add_y + PlayerMng.players.get(i).now_position_y) * (add_y + PlayerMng.players.get(i).now_position_y)) < Math.pow(HEX_LENGTH_PX, 2) ){
+
+						//				Log.w( "DEBUG_DATA", "hex_color_num[col_i][row_i] = " + hex_color_num[col_i][row_i]);
+						//				Log.w( "DEBUG_DATA", "hex_color_num[col_i][row_i] % 10 = " + hex_color_num[col_i][row_i] % 10);
+						//				Log.w( "DEBUG_DATA", "hex_color_num[col_i][row_i] / 10 = " + hex_color_num[col_i][row_i] / 10);
+
 						// 壁にぶつかったら
 						if( hex_color_num[col_i][row_i] == WALL_NO ){
 							PlayerMng.players.get(i).now_position_x = 0;
 							PlayerMng.players.get(i).now_position_y = 0;
-
 						}
-						// 新規塗りだったら
-						else if( hex_color_num[col_i][row_i] != PlayerMng.playerColorNo[i] ){
-							// 色を記録
-							hex_color_num[col_i][row_i] = PlayerMng.playerColorNo[i];
-							// 囲まれていたら色を塗る
-//								CheckCloseAndFill(i,j,canvas);
-							PlayerMng.players.get(i).before_fill_i = col_i;
-							PlayerMng.players.get(i).before_fill_j = row_i;
+
+						// 自分の領域に入ったら
+						else if( hex_color_num[col_i][row_i] % 10 == PlayerMng.playerColorNo[i] ){
+
+							// 侵入中だったら
+							if( PlayerMng.players.get(i).status == 1 ){
+								// 生還
+								ChengeHex(PlayerMng.playerColorNo[i]);
+								PlayerMng.players.get(i).status = 0; //侵入中でない
+							}
+						}
+						// 自分の領域でなかったら
+						else if( hex_color_num[col_i][row_i] % 10 != PlayerMng.playerColorNo[i] ){
+							//	Log.w( "DEBUG_DATA", "OTHER");
+
+							// 新規塗りだったら
+							if( hex_color_num[col_i][row_i] == CLEAN_NO ) {
+								//		Log.w( "DEBUG_DATA", "新規");
+								// 色を記録
+								hex_color_num[col_i][row_i] = PlayerMng.playerColorNo[i];
+								// 囲まれていたら色を塗る
+								// CheckCloseAndFill(i,j,canvas);
+//								PlayerMng.players.get(i).before_fill_i = col_i;
+//								PlayerMng.players.get(i).before_fill_j = row_i;
+							}
+							// 自プレイヤーが他プレイヤー領域に侵入中の場所だったら
+							else if( hex_color_num[col_i][row_i] / 10 ==  PlayerMng.playerColorNo[i] ){
+								//						Log.w( "DEBUG_DATA", "侵入中");
+								//NOOP
+							}
+							// 他プレイヤーの領域に侵入したら
+							else{
+								// 侵入中フラグ
+								PlayerMng.players.get(i).status = 1;
+
+//								Log.w( "DEBUG_DATA", "侵入した");
+								// 色を記録
+								// 他プレイヤーの色番号に、10倍した自プレイヤー番号を追加
+								hex_color_num[col_i][row_i] = hex_color_num[col_i][row_i] + ( PlayerMng.playerColorNo[i] * 10 );
+
+//								Log.w( "DEBUG_DATA", " hex_color_num " + hex_color_num[col_i][row_i]);
+							}
 						}
 					}
 				}
@@ -230,8 +274,9 @@ public class FieldMng{
 				// 表示なし
 				if( hex_color_num[col_i][row_i] == DALETE_NO ) continue;
 
-				// 六角形の描画
-				paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[col_i][row_i]][0], hex_color_rgb[hex_color_num[col_i][row_i]][1], hex_color_rgb[hex_color_num[col_i][row_i]][2]));
+				// ○六角形の描画
+				// 色（一桁目の数字）
+				paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[col_i][row_i] % 10][0], hex_color_rgb[hex_color_num[col_i][row_i] % 10][1], hex_color_rgb[hex_color_num[col_i][row_i] % 10][2]));
 				path.reset();
 				// 右
 				path.moveTo(center_x + HEX_LENGTH_PX - HEX_WIDHT_PX + add_x, center_y + add_y);
@@ -248,10 +293,31 @@ public class FieldMng{
 				path.close();
 				canvas.drawPath(path, paint);
 
+				// ○四角形の描画
+				// 色（二桁目の数字）
+				//Log.w( "DEBUG_DATA", "四角形 1 = " + hex_color_num[col_i][row_i]);
+				if( hex_color_num[col_i][row_i] > 10 ) {
+					//Log.w( "DEBUG_DATA", "四角形 2 =" + hex_color_num[col_i][row_i] / 10);
+					//Log.w( "DEBUG_DATA", "四角形 3 =" + hex_color_rgb[hex_color_num[col_i][row_i] / 10][0] + hex_color_rgb[hex_color_num[col_i][row_i] / 10][1] + hex_color_rgb[hex_color_num[col_i][row_i] / 10][2]);
+					paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[col_i][row_i] / 10][0], hex_color_rgb[hex_color_num[col_i][row_i] / 10][1], hex_color_rgb[hex_color_num[col_i][row_i] / 10][2]));
+					canvas.drawRect(center_x + add_x - TET_LENGTH_PX, center_y + add_y - TET_LENGTH_PX, center_x + add_x + TET_LENGTH_PX, center_y + add_y + TET_LENGTH_PX, paint);
+
+					//Log.w( "DEBUG_DATA", "四角形 4 =" + hex_color_rgb[hex_color_num[col_i][row_i] / 10][0] + hex_color_rgb[hex_color_num[col_i][row_i] / 10][1] + hex_color_rgb[hex_color_num[col_i][row_i] / 10][2]);
+				}
 			}
 		}
 	}
 
+	// 侵略中の部分を侵略完了に変更
+	public static void ChengeHex(int color_num) {
+		for( int col_i = 0; col_i < HEX_NUM_COL; col_i++ ) {
+			for (int row_i = 0; row_i < HEX_NUM_ROW; row_i++) {
+				if( hex_color_num[col_i][row_i] / 10 ==  color_num ){
+					hex_color_num[col_i][row_i] = color_num;
+				}
+			}
+		}
+	}
 
 	public static void CountHex(Paint paint, Canvas canvas, int col_check,int row_check){
 		float add_x,add_y;
@@ -271,7 +337,7 @@ public class FieldMng{
 
 				if( col_check == col_i && row_check == row_i ){
 					for( int user_i = 0; user_i < PlayerMng.playerNum; user_i++ ){
-						if( hex_color_num[col_i][row_i] == PlayerMng.playerColorNo[user_i] ){
+						if( hex_color_num[col_i][row_i] % 10 == PlayerMng.playerColorNo[user_i] ){
 							hex_color_num[col_i][row_i] = COUNT_NO;
 							countHitFlg = true;
 							PlayerMng.players.get(user_i).score++;
@@ -292,7 +358,7 @@ public class FieldMng{
 				if( hex_color_num[col_i][row_i] == DALETE_NO ) continue;
 
 				// 六角形の描画
-				paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[col_i][row_i]][0], hex_color_rgb[hex_color_num[col_i][row_i]][1], hex_color_rgb[hex_color_num[col_i][row_i]][2]));
+				paint.setColor(Color.argb(255, hex_color_rgb[hex_color_num[col_i][row_i] % 10][0], hex_color_rgb[hex_color_num[col_i][row_i] % 10][1], hex_color_rgb[hex_color_num[col_i][row_i] % 10][2]));
 				path.reset();
 
 				// 右
