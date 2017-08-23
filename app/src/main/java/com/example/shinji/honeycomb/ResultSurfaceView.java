@@ -84,7 +84,6 @@ public class ResultSurfaceView extends SurfaceView implements  Runnable,SurfaceH
 				canvas.drawRect( 0, 0, screen_width, screen_height, bgPaint);
 
 
-
 				// 基本六角形
 				FieldMng.CountHex(paint, canvas, col_i, row_i);
 
@@ -94,8 +93,6 @@ public class ResultSurfaceView extends SurfaceView implements  Runnable,SurfaceH
 
 				// スコア表示
 				ScoreMng.PrintScore(paint, canvas);
-
-
 
 				// 描画
 				surfaceHolder.unlockCanvasAndPost(canvas);

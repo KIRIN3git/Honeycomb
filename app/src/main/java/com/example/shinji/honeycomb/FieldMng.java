@@ -215,6 +215,18 @@ public class FieldMng{
 				// 一旦、円で計算
 				for( int i = 0; i < PlayerMng.playerNum; i++ ){
 					if( ((add_x + PlayerMng.players.get(i).now_position_x) * (add_x + PlayerMng.players.get(i).now_position_x) + (add_y + PlayerMng.players.get(i).now_position_y) * (add_y + PlayerMng.players.get(i).now_position_y)) < Math.pow(HEX_LENGTH_PX, 2) ){
+						//一つ前位置(i,j)を記録
+						if( PlayerMng.players.get(i).now_position_i == col_i ){
+							PlayerMng.players.get(i).before_position_i = PlayerMng.players.get(i).now_position_i;
+							PlayerMng.players.get(i).before_position_j = PlayerMng.players.get(i).now_position_j;
+						}
+						//現在位置(i,j)を記録
+						PlayerMng.players.get(i).now_position_i = col_i;
+						PlayerMng.players.get(i).now_position_j = row_i;
+
+
+
+
 
 						//				Log.w( "DEBUG_DATA", "hex_color_num[col_i][row_i] = " + hex_color_num[col_i][row_i]);
 						//				Log.w( "DEBUG_DATA", "hex_color_num[col_i][row_i] % 10 = " + hex_color_num[col_i][row_i] % 10);
@@ -232,17 +244,25 @@ public class FieldMng{
 							// 侵入中だったら
 							if( PlayerMng.players.get(i).status == 1 ){
 								// 生還
-								ChengeHex(PlayerMng.playerColorNo[i]);
+//								ChengeHex(PlayerMng.playerColorNo[i]);
+								CheckClosed(i);
 								PlayerMng.players.get(i).status = 0; //侵入中でない
 							}
 						}
 						// 自分の領域でなかったら
 						else if( hex_color_num[col_i][row_i] % 10 != PlayerMng.playerColorNo[i] ){
-							//	Log.w( "DEBUG_DATA", "OTHER");
+							// Log.w( "DEBUG_DATA", "OTHER");
+							// 侵入中フラグ
+							PlayerMng.players.get(i).status = 1;
+							// 色を記録
+							// 他プレイヤーの色番号に、10倍した自プレイヤー番号を追加
+							hex_color_num[col_i][row_i] = hex_color_num[col_i][row_i] + ( PlayerMng.playerColorNo[i] * 10 );
 
+
+/*
 							// 新規塗りだったら
 							if( hex_color_num[col_i][row_i] == CLEAN_NO ) {
-								//		Log.w( "DEBUG_DATA", "新規");
+								// Log.w( "DEBUG_DATA", "新規");
 								// 色を記録
 								hex_color_num[col_i][row_i] = PlayerMng.playerColorNo[i];
 								// 囲まれていたら色を塗る
@@ -252,7 +272,7 @@ public class FieldMng{
 							}
 							// 自プレイヤーが他プレイヤー領域に侵入中の場所だったら
 							else if( hex_color_num[col_i][row_i] / 10 ==  PlayerMng.playerColorNo[i] ){
-								//						Log.w( "DEBUG_DATA", "侵入中");
+								// Log.w( "DEBUG_DATA", "侵入中");
 								//NOOP
 							}
 							// 他プレイヤーの領域に侵入したら
@@ -267,6 +287,7 @@ public class FieldMng{
 
 //								Log.w( "DEBUG_DATA", " hex_color_num " + hex_color_num[col_i][row_i]);
 							}
+*/
 						}
 					}
 				}
@@ -379,7 +400,24 @@ public class FieldMng{
 		}
 	}
 
+	// 侵略中の部分を侵略完了に変更
+	public static void CheckClosed(int player_no) {
+		// 一つ前に色を塗る
+		hex_color_num[PlayerMng.players.get(player_no).before_position_i][PlayerMng.players.get(player_no).before_position_j] = PlayerMng.playerColorNo[player_no];
 
+		// i,jが隣接する i,jを一覧取得
+		int[] ret = GetConnect(PlayerMng.players.get(player_no).before_position_i,PlayerMng.players.get(player_no).before_position_j);
+	}
+
+	public static int[] GetConnect(int i,int j){
+
+
+
+		int[] ret;
+		ret =
+
+		return ret;
+	}
 
 //	public void CheckCloseAndFill(int i,int j,Canvas canvas){
 //

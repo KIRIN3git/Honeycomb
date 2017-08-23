@@ -8,12 +8,17 @@ public class PlayerStatus{
 
 	// プレイヤーの開始位置
 	int start_position_x,start_position_y;
-	// プレイヤーの現在位置
+	// プレイヤーの現在位置(x,y)
 	int now_position_x,now_position_y;
+	// プレイヤーの現在位置(i,j)
+	int now_position_i,now_position_j;
+	// プレイヤーの一つ前の位置(i,j)
+	int before_position_i,before_position_j;
+
 	// プレイヤーカラー
 	int r,g,b;
 	// プレイヤーの状態
-	// 0:通常,1:相手に侵入中,2:死亡
+	// 0:自分の領域,1:外部に侵入中,2:死亡
 	int status = 0;
 
 
@@ -25,8 +30,7 @@ public class PlayerStatus{
 	boolean touch_flg;
 	// タッチ用ポイントID
 	int point_id;
-	// 一つ前の塗りつぶしi,j
-	int before_fill_i,before_fill_j;
+
 	// 指示器のXY位置
 	int indicatorXY[] = {0,0};
 	// 開始位置と指示器の差分
@@ -61,8 +65,4 @@ public class PlayerStatus{
 //    final static int P2_G = 127 ;
 //    final static int P2_B = 127;
 	}
-
-
-
-
 }
