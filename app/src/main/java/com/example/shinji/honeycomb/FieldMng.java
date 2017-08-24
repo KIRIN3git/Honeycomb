@@ -7,6 +7,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 /**
  * Created by shinji on 2017/06/09.
  */
@@ -195,7 +197,6 @@ public class FieldMng{
 		// Canvas 中心点
 		float center_x = canvas.getWidth() / 2;
 		float center_y = canvas.getHeight() / 2;
-
 		// パスを設定
 		Path path = new Path();
 
@@ -203,8 +204,8 @@ public class FieldMng{
 		paint.setStrokeWidth(HEX_WIDHT_PX);
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 		for( int col_i = 0; col_i < HEX_NUM_COL; col_i++ ){
-			for( int row_i = 0; row_i < HEX_NUM_ROW; row_i++ ){
 
+			for( int row_i = 0; row_i < HEX_NUM_ROW; row_i++ ){
 				// 移動分
 				// row_i - ( HEX_NUM / 2 ),col_i - ( HEX_NUM / 2 ) は左右対称にするため
 				add_x = HEX_LENGTH_PX * (3.0f/2.0f) * (float)(row_i - ( HEX_NUM_ROW / 2 ));
@@ -215,19 +216,18 @@ public class FieldMng{
 				// 一旦、円で計算
 				for( int i = 0; i < PlayerMng.playerNum; i++ ){
 					if( ((add_x + PlayerMng.players.get(i).now_position_x) * (add_x + PlayerMng.players.get(i).now_position_x) + (add_y + PlayerMng.players.get(i).now_position_y) * (add_y + PlayerMng.players.get(i).now_position_y)) < Math.pow(HEX_LENGTH_PX, 2) ){
-						//一つ前位置(i,j)を記録
-						if( PlayerMng.players.get(i).now_position_i == col_i ){
-							PlayerMng.players.get(i).before_position_i = PlayerMng.players.get(i).now_position_i;
-							PlayerMng.players.get(i).before_position_j = PlayerMng.players.get(i).now_position_j;
+
+						//一つ前位置(col,row)を記録
+						if( PlayerMng.players.get(i).now_position_col != col_i ){
+							PlayerMng.players.get(i).now_position_col = PlayerMng.players.get(i).now_position_col;
+							PlayerMng.players.get(i).before_position_row = PlayerMng.players.get(i).before_position_row;
 						}
-						//現在位置(i,j)を記録
-						PlayerMng.players.get(i).now_position_i = col_i;
-						PlayerMng.players.get(i).now_position_j = row_i;
-
-
-
-
-
+						//現在位置(col,row)を記録
+						PlayerMng.players.get(i).now_position_col = col_i;
+						PlayerMng.players.get(i).before_position_row = row_i;
+						if(i==0){
+							CheckClosed(i);
+						}
 						//				Log.w( "DEBUG_DATA", "hex_color_num[col_i][row_i] = " + hex_color_num[col_i][row_i]);
 						//				Log.w( "DEBUG_DATA", "hex_color_num[col_i][row_i] % 10 = " + hex_color_num[col_i][row_i] % 10);
 						//				Log.w( "DEBUG_DATA", "hex_color_num[col_i][row_i] / 10 = " + hex_color_num[col_i][row_i] / 10);
@@ -317,6 +317,7 @@ public class FieldMng{
 				// ○四角形の描画
 				// 色（二桁目の数字）
 				//Log.w( "DEBUG_DATA", "四角形 1 = " + hex_color_num[col_i][row_i]);
+				/*
 				if( hex_color_num[col_i][row_i] > 10 ) {
 					//Log.w( "DEBUG_DATA", "四角形 2 =" + hex_color_num[col_i][row_i] / 10);
 					//Log.w( "DEBUG_DATA", "四角形 3 =" + hex_color_rgb[hex_color_num[col_i][row_i] / 10][0] + hex_color_rgb[hex_color_num[col_i][row_i] / 10][1] + hex_color_rgb[hex_color_num[col_i][row_i] / 10][2]);
@@ -325,6 +326,7 @@ public class FieldMng{
 
 					//Log.w( "DEBUG_DATA", "四角形 4 =" + hex_color_rgb[hex_color_num[col_i][row_i] / 10][0] + hex_color_rgb[hex_color_num[col_i][row_i] / 10][1] + hex_color_rgb[hex_color_num[col_i][row_i] / 10][2]);
 				}
+				*/
 			}
 		}
 	}
@@ -402,21 +404,38 @@ public class FieldMng{
 
 	// 侵略中の部分を侵略完了に変更
 	public static void CheckClosed(int player_no) {
+
 		// 一つ前に色を塗る
-		hex_color_num[PlayerMng.players.get(player_no).before_position_i][PlayerMng.players.get(player_no).before_position_j] = PlayerMng.playerColorNo[player_no];
+		hex_color_num[PlayerMng.players.get(player_no).before_position_col][PlayerMng.players.get(player_no).before_position_row] = PlayerMng.playerColorNo[player_no];
 
 		// i,jが隣接する i,jを一覧取得
-		int[] ret = GetConnect(PlayerMng.players.get(player_no).before_position_i,PlayerMng.players.get(player_no).before_position_j);
+		ArrayList<Integer> num = GetConnect(PlayerMng.players.get(player_no).before_position_col,PlayerMng.players.get(player_no).before_position_row);
 	}
 
-	public static int[] GetConnect(int i,int j){
+	public static ArrayList<Integer> GetConnect(int col,int row){
+
+		Log.w( "AAAAA", "col " + col);
+		Log.w( "AAAAA", "row " + row);
+		Log.w( "AAAAA", "hex_color_num[0].length " + hex_color_num[0].length);
+		Log.w( "AAAAA", "hex_color_num.length " + hex_color_num.length);
+
+
+		ArrayList<Integer> num = new ArrayList<Integer>();
+
+
+		// 左端でなければ
+		if( col != 0 ){
+			num.add(col-1);
+		}
+		// 右端でなければ
+		if( col != hex_color_num[0].length - 1 ){
+			num.add(col+1);
+		}
 
 
 
-		int[] ret;
-		ret =
 
-		return ret;
+		return num;
 	}
 
 //	public void CheckCloseAndFill(int i,int j,Canvas canvas){

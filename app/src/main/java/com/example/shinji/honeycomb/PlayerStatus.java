@@ -10,10 +10,10 @@ public class PlayerStatus{
 	int start_position_x,start_position_y;
 	// プレイヤーの現在位置(x,y)
 	int now_position_x,now_position_y;
-	// プレイヤーの現在位置(i,j)
-	int now_position_i,now_position_j;
-	// プレイヤーの一つ前の位置(i,j)
-	int before_position_i,before_position_j;
+	// プレイヤーの現在位置(row,col)
+	int now_position_row,now_position_col;
+	// プレイヤーの一つ前の位置(row,col)
+	int before_position_row,before_position_col;
 
 	// プレイヤーカラー
 	int r,g,b;

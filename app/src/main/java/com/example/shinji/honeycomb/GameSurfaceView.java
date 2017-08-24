@@ -66,23 +66,25 @@ public class GameSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 
 		while(thread != null){
 			try{
-
+				Log.w( "AAAAA", "aaa01");
 				TimeMng.fpsStart();
 
 				canvas = surfaceHolder.lockCanvas();
 				canvas.drawRect( 0, 0, screen_width, screen_height, bgPaint);
-
-
+				Log.w( "AAAAA", "aaa02");
 				// タップ移動比率xyと指示マーカーのxyを取得
 				if( TimeMng.battleFlg ) PlayerMng.GetMoveXY();
-
+				Log.w( "AAAAA", "aaa03");
 				// 基本六角形
 				FieldMng.DrawHex(paint, canvas);
-
+				Log.w( "AAAAA", "aaa04");
 				// プレイヤーの表示
 				PlayerMng.DrawPlayer(paint, canvas);
+
+				Log.w( "AAAAA", "aaa05");
 				// カウントダウン中
 				if( TimeMng.countDownFlg ){
+					Log.w( "AAAAA", "aaa1 countDownFlg");
 					// 開始カウントダウンの表示
 					TimeMng.drawCountDown(paint, canvas);
 				}

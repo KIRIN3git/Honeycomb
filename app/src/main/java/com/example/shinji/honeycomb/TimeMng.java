@@ -62,7 +62,7 @@ public class TimeMng{
 	}
 
 	public static void drawCountDown(Paint paint, Canvas canvas){
-
+		Log.w( "AAAAA", "drawCountDown");
 		//カウントダウン開始からのミリ秒
 		long StartMillis = System.currentTimeMillis() - startCountDownMS;
 
