@@ -247,18 +247,13 @@ public class FieldMng{
 							SetRoundColoer(i,col,row);
 						}
 
-
-						//				Log.w( "DEBUG_DATA", "hex_color_num[col][row] = " + hex_color_num[col][row]);
-						//				Log.w( "DEBUG_DATA", "hex_color_num[col][row] % 10 = " + hex_color_num[col][row] % 10);
-						//				Log.w( "DEBUG_DATA", "hex_color_num[col][row] / 10 = " + hex_color_num[col][row] / 10);
-
 						// 壁にぶつかったら
 						if( hex_color_num[col][row] == WALL_NO ){
 							PlayerMng.players.get(i).now_position_x = 0;
 							PlayerMng.players.get(i).now_position_y = 0;
 						}
-						// 自分の領域に入ったら
-						else if( hex_color_num[col][row] % 10 == PlayerMng.playerColorNo[i] ){
+						// 自分の領域に入ったら（仮色の場合はダメ）
+						else if( hex_color_num[col][row] % 10 == PlayerMng.playerColorNo[i] && hex_color_num[col][row] / 10 == CLEAN_NO ){
 							// 侵入中だったら
 							if( PlayerMng.players.get(i).status == 1 ){
 								// 生還
@@ -363,13 +358,9 @@ public class FieldMng{
 		Log.w( "DEBUG_DATA1", "user_no" + user_no);
 		Log.w( "DEBUG_DATA1", "connect.size()" + connect.size());
 
+		hex_color_num[col][row] = PlayerMng.playerColorNo[user_no];
 		for(int i = 0; i < connect.size(); i++){
 			hex_color_num[connect.get(i).get(0)][connect.get(i).get(1)] = PlayerMng.playerColorNo[user_no];
-			Log.w( "DEBUG_DATA1", "1111");
-
-			Log.w( "DEBUG_DATA2", "connect.get(i).get(0)" + connect.get(0).get(0));
-			Log.w( "DEBUG_DATA2", "connect.get(i).get(1)" + connect.get(i).get(1));
-			Log.w( "DEBUG_DATA2", "user_no" + user_no);
 		}
 
 		PlayerMng.players.get(user_no).erea_flg = true;

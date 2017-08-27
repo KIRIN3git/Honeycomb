@@ -20,7 +20,8 @@
             android:name=".GameActivity"
             android:theme="@style/AppFullScreenTheme">
         </activity>
-        <activity android:name=".ResultActivity">
+        <activity android:name=".ResultActivity"
+            android:theme="@style/AppFullScreenTheme">
         </activity>
     </application>
 
