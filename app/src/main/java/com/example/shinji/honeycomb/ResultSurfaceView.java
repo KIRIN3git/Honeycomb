@@ -33,7 +33,7 @@ public class ResultSurfaceView extends SurfaceView implements  Runnable,SurfaceH
 	boolean scoreFinishFlg = false;
 	int win_user_id;
 
-	int col_i = 0,row_i = 0;
+	int col = 0,row = 0;
 
 	SurfaceHolder surfaceHolder;
 	Thread thread;
@@ -85,7 +85,7 @@ public class ResultSurfaceView extends SurfaceView implements  Runnable,SurfaceH
 
 
 				// 基本六角形
-				FieldMng.CountHex(paint, canvas, col_i, row_i);
+				FieldMng.CountHex(paint, canvas, col, row);
 
 				if(scoreFinishFlg){
 					ScoreMng.PrintWinner(paint, canvas, win_user_id);
@@ -99,14 +99,14 @@ public class ResultSurfaceView extends SurfaceView implements  Runnable,SurfaceH
 
 				if( !scoreFinishFlg ) {
 					// 評価HEX変更
-					col_i++;
-					if (col_i == FieldMng.HEX_NUM_COL) {
-						row_i++;
-						col_i = 0;
+					col++;
+					if (col == FieldMng.HEX_NUM_COL) {
+						row++;
+						col = 0;
 					}
-					if (row_i == FieldMng.HEX_NUM_ROW) {
-						col_i = -1;
-						row_i = -1;
+					if (row == FieldMng.HEX_NUM_ROW) {
+						col = -1;
+						row = -1;
 						scoreFinishFlg = true;
 
 						win_user_id = PlayerMng.checkWinner();

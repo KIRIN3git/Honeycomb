@@ -38,10 +38,11 @@ public class GameSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 //		surfaceView = new BaseSurfaceView(getContext());
 //		setContentView(surfaceView);
 
-		// フィールド情報の初期化
-		FieldMng.fieldInit(context);
 		// プレイヤー情報の初期化
 		PlayerMng.playerInit(context);
+		// フィールド情報の初期化
+		FieldMng.fieldInit(context);
+
 		// 時間情報の初期化
 		TimeMng.timeInit(context);
 
@@ -109,7 +110,6 @@ public class GameSurfaceView extends SurfaceView implements  Runnable,SurfaceHol
 						getContext().startActivity(intent);
 						scoreFlg = true;
 					}
-
 				}
 
 				// 描画

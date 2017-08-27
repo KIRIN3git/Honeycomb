@@ -23,7 +23,7 @@ public class PlayerMng{
 	// プレイヤー人数
 	static int playerNum = 2;
 	// プレイヤースタート位置
-	static int playerXY[][] = {{0,-100},{0,100}};
+	static int playerXY[][] = {{0,-150},{0,150}};
 	// プレイヤーカラー
 	static int playerColorNo[] = {1,2};
 
@@ -82,7 +82,9 @@ public class PlayerMng{
 			canvas.drawCircle(center_x - PlayerMng.players.get(i).now_position_x, center_y - PlayerMng.players.get(i).now_position_y, PLAYER_RADIUS_PX, paint);
 //			canvas.drawCircle(0,0, PLAYER_RADIUS_PX, paint);
 
+/*
 			for (int j = 0; j < playerNum; j++) {
+
 				if (i == j) continue;
 				if( ((PlayerMng.players.get(i).now_position_x - PlayerMng.players.get(j).now_position_x) * (PlayerMng.players.get(i).now_position_x - PlayerMng.players.get(j).now_position_x)
 						+ (PlayerMng.players.get(i).now_position_y - PlayerMng.players.get(j).now_position_y) * (PlayerMng.players.get(i).now_position_y - PlayerMng.players.get(j).now_position_y)) < Math.pow(PLAYER_RADIUS_PX * 2, 2) ){
@@ -100,6 +102,7 @@ public class PlayerMng{
 				}
 
 			}
+*/
 		}
 	}
 

@@ -14,6 +14,8 @@ public class PlayerStatus{
 	int now_position_row,now_position_col;
 	// プレイヤーの一つ前の位置(row,col)
 	int before_position_row,before_position_col;
+	// プレイヤーの初回エリア表示判定
+	boolean erea_flg = false;
 
 	// プレイヤーカラー
 	int r,g,b;
