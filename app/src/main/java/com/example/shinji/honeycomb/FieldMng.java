@@ -88,7 +88,7 @@ public class FieldMng{
 		HEX_WIDHT_PX = CommonMng.PxToDp(HEX_WIDHT_DP,density);
 		TET_LENGTH_PX = CommonMng.PxToDp(TET_LENGTH_DP,density);
 
-		//六角形1 19 20
+//		//六角形1 19 20
 		hex_color_num = new int[][]{
 				{8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8},
 				{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8},
